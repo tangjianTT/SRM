@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.menu.MenuButtonMapper" >
+  <select id="findAllMenubutton" resultType="com.neusoft.srm.model.menu.MenuButton">
+      SELECT 
+         BUTTON_CODE, 
+		 BUTTON_NAME, 
+		 BUTTON_PIC_URL, 
+		 BUTTON_URL, 
+		 BUTTON_STYLE, 
+		 MENU_CODE, 
+		 DEL_FLAG, 
+		 ID, 
+		 SORT_NO
+      FROM
+         T_SYS_MENU_BUTTON
+      WHERE
+         MENU_CODE = #{menuCode} AND DEL_FLAG = '0'
+  </select>
+   <!-- 新增按钮信息 -->
+   <insert id="insertMenubutton" parameterType="com.neusoft.srm.model.menu.MenuButton" >
+    INSERT INTO
+       T_SYS_MENU_BUTTON
+       (BUTTON_CODE, BUTTON_NAME,  
+        BUTTON_URL, BUTTON_STYLE, MENU_CODE, 
+        REMARK, DEL_FLAG, ID, 
+        SORT_NO, GMT_CREATE, CREATE_BY, 
+        GMT_MODIFIED, LAST_MODIFIED_BY)
+    VALUES 
+       (#{menuButton.buttonCode},#{menuButton.buttonName},
+        #{menuButton.buttonUrl},#{menuButton.buttonStyle},#{menuButton.menuCode},
+        #{menuButton.remark},'0',UUID(),
+        #{menuButton.sortNo},NOW(),#{menuButton.createBy},
+        NOW(),#{menuButton.lastModifiedBy})
+  </insert>
+  <!-- 修改菜单按钮 -->
+  <update id="updateMenubutton" parameterType="com.neusoft.srm.model.menu.MenuButton" >
+    UPDATE
+       T_SYS_MENU_BUTTON
+    SET
+       BUTTON_NAME = #{menuButton.buttonName},
+       BUTTON_URL = #{menuButton.buttonUrl},
+       BUTTON_STYLE = #{menuButton.buttonStyle},
+       REMARK = #{menuButton.remark},
+       SORT_NO = #{menuButton.sortNo},
+       GMT_MODIFIED = NOW(),
+       LAST_MODIFIED_BY = #{menuButton.lastModifiedBy}
+    WHERE
+       BUTTON_CODE = #{menuButton.buttonCode}
+  </update>
+  <!-- 逻辑删除菜单代码 -->
+  <update id="deleteMenubutton">
+    UPDATE 
+       T_SYS_MENU_BUTTON
+    SET   
+       DEL_FLAG = '1',
+       LAST_MODIFIED_BY = #{operatorCode},
+       GMT_MODIFIED = NOW()
+    WHERE
+       BUTTON_CODE IN
+       <foreach collection="buttonCodes" item="buttonCodes" open="(" close=")" 
+             separator=",">
+       #{buttonCodes}
+       </foreach>
+  </update>
+  <!-- 逻辑删除角色菜单按钮关联表 -->
+  <update id="deleteRoleMenuButton">
+     UPDATE
+        T_SYS_ROLE_MENU_BUTTON
+     SET
+        DEL_FLAG = '1',
+        LAST_MODIFIED_BY = #{operatorCode},
+        GMT_MODIFIED = NOW()
+     WHERE
+        BUTTON_CODE = #{buttonCode}
+  </update>
+</mapper>

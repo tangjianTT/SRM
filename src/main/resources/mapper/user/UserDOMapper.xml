@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.user.UserDOMapper">
+	<resultMap id="userResultMap"
+		type="com.neusoft.srm.model.user.User" autoMapping="true">
+		<id column="USER_CODE" property="userCode" />
+		<result column="DEPT_CODE" property="deptCode" />
+	</resultMap>
+	<!-- 查询所有用户信息 -->
+	<select id="findListUsers" resultType="com.neusoft.srm.model.user.User">
+		SELECT
+		   T.USER_CODE,T.USER_ACNT,T.USER_NAME,T.DEPT_CODE,
+		   PT.DEPT_NAME,T1.POST_NAME,T1.ROLE_NAME,T.ADMIN_FLAG,
+		   T.PHONE,T.EMAIL,
+		CASE
+		WHEN 
+		   T.ADMIN_FLAG=0 AND T.USER_TYPE_CODE =1 
+		THEN 0
+		WHEN
+		   T.ADMIN_FLAG=1 AND T.USER_TYPE_CODE =1 
+		THEN 1
+		WHEN 
+		   T.USER_TYPE_CODE =2
+		THEN 2
+		ELSE 3
+		END "USER_TYPE_CODE",
+		   T.SEND_MSG_FLAG,
+		   T.SEND_EMAIL_FLAG,
+		   T.LOGIN_ERR_NO,
+		   T.FREEZE_FLAG,
+		   T.GMT_CREATE,
+		   T.REMARK
+		FROM 
+		   T_SYS_USER T
+		LEFT JOIN
+		   (SELECT
+		       UP.USER_CODE ,GROUP_CONCAT(P.POST_NAME) POST_NAME ,
+		       GROUP_CONCAT(R.ROLE_NAME) ROLE_NAME
+		FROM
+		   T_SYS_USER_POST UP
+		LEFT JOIN
+		   T_SYS_POST P 
+		ON 
+		   P.POST_CODE =UP.POST_CODE
+		AND 
+		   P.DEL_FLAG = 0
+		AND 
+		   UP.DEL_FLAG = 0
+		LEFT JOIN
+		   T_SYS_POST_ROLE PR ON PR.POST_CODE = UP.POST_CODE 
+		AND PR.DEL_FLAG = 0 AND UP.DEL_FLAG = 0
+		LEFT JOIN 
+		   T_SYS_ROLE R
+		ON 
+		   R.ROLE_CODE =PR.ROLE_CODE 
+		AND 
+		   PR.DEL_FLAG = 0
+		AND
+		   R.DEL_FLAG = 0
+		GROUP BY
+		   UP.USER_CODE) T1 
+		ON 
+		   T.USER_CODE = T1.USER_CODE AND T.DEL_FLAG = 0
+		LEFT JOIN 
+		   T_SYS_DEPT PT
+		ON 
+		   PT.DEPT_CODE = T.DEPT_CODE
+		WHERE 1=1 AND T.DEL_FLAG = 0
+		<if test="user.userAcnt != null and user.userAcnt !=''">
+			AND T.USER_ACNT LIKE CONCAT(CONCAT('%',#{user.userAcnt}),'%')
+		</if>
+		<if test="user.userName != null and user.userName !=''">
+			AND T.USER_NAME LIKE CONCAT(CONCAT('%',#{user.userName}),'%')
+		</if>
+		<if test="user.roleName != null and user.roleName !=''">
+			AND T1.ROLE_NAME LIKE CONCAT(CONCAT('%',#{user.roleName}),'%')
+		</if>
+		<if test="user.postName != null and user.postName !=''">
+			AND T1.POST_NAME LIKE CONCAT(CONCAT('%',#{user.postName}),'%')
+		</if>
+		<if test="user.deptName != null and user.deptName !=''">
+			AND PT.DEPT_NAME LIKE CONCAT(CONCAT('%',#{user.deptName}),'%')
+		</if>
+		<if test="gmtCreateS != null and gmtCreateS !=''">
+			<if test="gmtCreateE != null and gmtCreateE !=''">
+				AND T.GMT_CREATE BETWEEN #{gmtCreateS} AND #{gmtCreateE}
+			</if>
+		</if>
+		ORDER BY T.GMT_MODIFIED DESC
+	</select>
+	<!-- 插入用户信息 -->
+	<insert id="insertUser"
+		parameterType="com.neusoft.srm.model.user.User">
+		INSERT INTO
+		   T_SYS_USER
+		(USER_CODE, USER_ACNT, USER_NAME,ADMIN_FLAG,
+		TEL, PHONE, EMAIL,LOGIN_ERR_NO,FREEZE_FLAG,
+		DEPT_CODE, USER_TYPE_CODE, SEND_MSG_FLAG,
+		SEND_EMAIL_FLAG, REMARK,DEL_FLAG,
+		ID,SORT_NO,GMT_CREATE,CREATE_BY,LAST_MODIFIED_BY,
+		GMT_MODIFIED
+		)
+		VALUES
+		(#{user.userCode}, #{user.userAcnt},
+		#{user.userName}, '1',
+		#{user.tel}, #{user.phone},
+		#{user.email},'0',
+		'0',#{user.deptCode},
+		#{user.userTypeCode},'1',
+		'1', #{user.remark},
+		'0',UUID(),'0',
+		NOW(),#{user.createBy},#{user.lastModifiedBy},NOW())
+	</insert>
+
+	<!-- 修改用户信息 -->
+	<update id="updateUser"
+		parameterType="com.neusoft.srm.model.user.User">
+		UPDATE 
+		   T_SYS_USER
+		SET
+		   USER_NAME = #{user.userName},
+		   USER_ACNT = #{user.userAcnt},
+		   TEL = #{user.tel},
+		   PHONE = #{user.phone},
+		   EMAIL = #{user.email},
+		   DEPT_CODE = #{user.deptCode},
+		   USER_TYPE_CODE = #{user.userTypeCode},
+		   SEND_MSG_FLAG = #{user.sendMsgFlag},
+		   SEND_EMAIL_FLAG = #{user.sendEmailFlag},
+		   REMARK = #{user.remark},
+		   GMT_CREATE = NOW(),
+		   CREATE_BY = #{user.createBy},
+		   GMT_MODIFIED = NOW(),
+		   LAST_MODIFIED_BY = #{user.lastModifiedBy}
+		WHERE 
+		   USER_CODE = #{user.userCode}
+	</update>
+	<!--逻辑删除用户信息 -->
+	<update id="deleteUserByCode">
+		UPDATE 
+		   T_SYS_USER 
+		SET 
+		   DEL_FLAG = '1',
+		   LAST_MODIFIED_BY = #{loginUserCode},
+		   GMT_MODIFIED = NOW()
+	    WHERE 
+	       USER_CODE in
+		<foreach collection="userCode" item="userCode" open="(" close=")"
+			separator=",">
+			#{userCode}
+		</foreach>
+	</update>
+	<!-- 修改用户密码 -->
+	<update id="updateUserPasswd">
+		UPDATE
+		   T_SYS_USER 
+		SET
+		   USER_PWD = #{userPwd},
+		   LAST_MODIFIED_BY = #{loginUserCode},
+		   GMT_MODIFIED = NOW()
+	    WHERE
+		   USER_CODE = #{userCode}
+	</update>
+	<!-- 冻结或者解冻用户 -->
+	<update id="updateUserFreezeFlag">
+		UPDATE 
+		   T_SYS_USER 
+		SET
+		   FREEZE_FLAG = #{freezeFlag},
+		   LAST_MODIFIED_BY = #{loginUserCode},
+		   GMT_MODIFIED = NOW()
+		WHERE
+		   USER_CODE = #{userCode}
+	</update>
+</mapper>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

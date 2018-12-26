@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.role.RoleMapper" >
+  <select id="findAllRole" parameterType="java.lang.String"
+  resultType="com.neusoft.srm.model.role.Role"
+  >
+     SELECT 
+        ROLE_CODE,
+        ROLE_NAME,
+        CREATE_BY,
+        GMT_CREATE,
+        REMARK
+     FROM
+        T_SYS_ROLE
+     WHERE 1=1 AND DEL_FLAG = '0'
+      <if test="roleName != null and roleName != ''">
+         AND ROLE_NAME LIKE CONCAT(CONCAT('%',#{roleName}),'%')
+      </if>
+     ORDER BY GMT_MODIFIED DESC
+  </select>
+  <!-- 根据岗位code,菜单code获取按钮信息-->
+  <select id="findMenuBtnByPost">
+	SELECT
+	   B.BUTTON_CODE,
+	   MB.BUTTON_NAME,
+	   MB.BUTTON_STYLE,
+	   MB.BUTTON_URL,
+	   B.MENU_CODE
+	FROM
+	   (SELECT 
+	       RB.ROLE_CODE,RB.BUTTON_CODE
+	    FROM 
+	       T_SYS_ROLE_MENU_BUTTON RB
+	LEFT JOIN
+	(SELECT
+	    PR.ROLE_CODE
+	FROM 
+	   T_SYS_POST_ROLE PR
+	WHERE PR.POST_CODE = 2018051512082612395 AND PR.DEL_FLAG = 0) A
+	ON RB.ROLE_CODE = A.ROLE_CODE AND RB.DEL_FLAG = 0
+	WHERE 
+	   RB.MENU_CODE = 2018051512052795871 AND RB.DEL_FLAG = 0) B
+	LEFT JOIN 
+	   T_SYS_MENU_BUTTON MB
+	ON B.BUTTON_CODE = MB.BUTTON_CODE AND MB.DEL_FLAG = 0
+  </select>
+  <!-- 新增角色 -->
+  <insert id="insertRole" parameterType="com.neusoft.srm.model.role.Role">
+	INSERT INTO 
+	   T_SYS_ROLE
+	    (ROLE_CODE,
+	    ROLE_NAME,
+	    REMARK,
+	    DEL_FLAG,
+	    ID,
+	    SORT_NO,
+	    GMT_CREATE,
+	    CREATE_BY,
+	    GMT_MODIFIED,
+	    LAST_MODIFIED_BY
+	    )
+	   VALUES
+	    (#{role.roleCode},
+	     #{role.roleName},
+	     #{role.remark},
+	     '0',
+		 UUID(),
+		 '0',
+		 NOW(),
+		 #{role.createBy},
+		 NOW(),
+		 #{role.createBy}
+        );   
+  </insert>
+  <!-- 修改角色信息 -->
+  <update id="updateRole" parameterType="com.neusoft.srm.model.role.Role">
+     UPDATE
+        T_SYS_ROLE
+     SET
+        ROLE_NAME = #{role.roleName},
+        REMARK = #{role.remark},
+        GMT_MODIFIED = NOW(),
+        LAST_MODIFIED_BY = #{loginCode}
+     WHERE
+        ROLE_CODE = #{role.roleCode}
+  </update>
+  <!-- 逻辑删除角色 -->
+  <update id="deleteRole">
+    UPDATE
+       T_SYS_ROLE
+    SET
+       DEL_FLAG = 1,
+       GMT_MODIFIED = NOW(),
+       LAST_MODIFIED_BY = #{loginCode}
+    WHERE ROLE_CODE IN
+      <foreach collection="roleCode" item="roleCode" open="(" close=")"
+       separator=",">
+         #{roleCode}
+       </foreach>
+  </update>
+  <!-- 获取所有岗位信息 -->
+  <select id="findPostList" resultType="com.neusoft.srm.model.post.Post">
+    SELECT * FROM T_SYS_POST
+  </select>
+  <!-- 获取角色岗位信息 -->
+  <select id="findPostsByRoleCode" resultType="com.neusoft.srm.model.post.Post" >
+	SELECT
+	   P.POST_CODE,
+	   P.POST_NAME,
+	   P.POST_NAME_J,
+	   P.CREATE_BY,
+	   P.DEL_FLAG,
+	   P.GMT_CREATE,
+	   P.ID,
+	   P.SORT_NO
+	FROM
+	   T_SYS_POST P
+	RIGHT JOIN 
+	(SELECT 
+	    PR.ROLE_CODE,
+	    PR.POST_CODE
+	 FROM 
+	    T_SYS_POST_ROLE PR
+	WHERE 
+	   PR.ROLE_CODE = #{roleCode} AND PR.DEL_FLAG = 0) A
+	ON P.POST_CODE = A.POST_CODE AND P.DEL_FLAG = 0
+  </select>
+  <!-- 修改角色岗位设置为无效 -->
+  <update id="updateRolePost">
+     UPDATE
+        T_SYS_POST_ROLE
+     SET
+        DEL_FLAG = 0;
+        GMT_MODIFIED = NOW(),
+        LAST_MODIFIED_BY = #{loginCode}
+     WHERE
+        ROLE_CODE = #{roleCode}
+  </update>
+  <insert id="changeRolePost">
+	 INSERT INTO 
+	    T_SYS_POST_ROLE
+	      (POST_CODE,
+	       ROLE_CODE,
+	 	   DEL_FLAG,
+		   ID,
+		   SORT_NO,
+		   GMT_CREATE,
+		   CREATE_BY,
+		   GMT_MODIFIED,
+		   LAST_MODIFIED_BY
+	)
+	VALUES
+	<foreach collection="postCode" item="postCode"  separator=",">
+	   (#{postCode},
+	    #{roleCode},
+	    '0',
+	    UUID(),
+	    '0',
+	    NOW(),
+	    #{loginCode},
+	    NOW(),
+	    #{loginCode}
+	    )
+	    </foreach>
+  </insert>
+  <!-- 查询当前角色的菜单权限 -->
+  <select id="findMenuByRole" resultType="com.neusoft.srm.model.menu.Menu">
+	SELECT 
+	   M.MENU_CODE
+	FROM 
+	   T_SYS_MENU M
+	RIGHT JOIN
+	(SELECT 
+	   RM.ROLE_CODE,RM.MENU_CODE
+	FROM 
+	   T_SYS_ROLE_MENU RM
+	WHERE
+	   RM.ROLE_CODE = #{roleCode} AND RM.DEL_FLAG = 0) A
+	ON
+	   M.MENU_CODE = A.MENU_CODE AND M.DEL_FLAG = 0
+  </select>
+</mapper>

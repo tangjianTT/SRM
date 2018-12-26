@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.user.GetPostMapper">
+	<resultMap type="com.neusoft.srm.model.post.Post"
+		id="postList" autoMapping="true">
+		<id column="POST_CODE" property="postCode" />
+		<result column="POST_NAME" property="postName" />
+		<result column="POST_NAME_J" property="postNameJ" />
+		<result column="DEL_FLAG" property="delFlag" />
+	</resultMap>
+	<select id="findPostList" resultMap="postList">
+		SELECT
+		POST_CODE,POST_NAME,DEL_FLAG,POST_NAME_J
+		FROM T_SYS_POST
+	</select>
+
+	<resultMap type="com.neusoft.srm.model.post.Post"
+		id="postListByUserCode">
+		<id column="POST_CODE" property="postCode" />
+		<result column="POST_NAME" property="postName" />
+		<result column="POST_NAME_J" property="postName" />
+		<result column="DEFAULT_FLAG" property="defaultFlag" />
+	</resultMap>
+	<select id="findPostListByUserCode"
+		resultMap="postListByUserCode">
+		SELECT
+		   SUP.USER_CODE,SUP.POST_CODE,SP.POST_NAME,
+		   SUP.DEL_FLAG,SP.POST_NAME_J,SUP.DEFAULT_FLAG
+		FROM
+		   T_SYS_USER_POST SUP
+		LEFT JOIN 
+		   T_SYS_POST SP
+		ON SUP.POST_CODE = SP.POST_CODE
+		AND 
+		   SUP.DEL_FLAG = 0 AND SP.DEL_FLAG = 0
+		WHERE
+		   SUP.USER_CODE = #{userCode}
+	</select>
+	<update id="updateUserPost" parameterType="java.lang.String">
+		UPDATE 
+		   T_SYS_USER_POST
+		SET 
+		   DEL_FALG = 1
+		WHERE 
+		   USER_CODE = #{userCode}
+	</update>
+	<insert id="insertUserPost">
+		INSERT INTO
+		   S_SYS_USER_POST
+		   (USER_CODE,POST_CODE,DEFAULT_FLAG,CREATE_BY,GMT_CREATE,
+		   ID,SORT_NO,GMT_MODIFIED,LAST_MODIFIED_BY)
+		VALUES
+		   (#{userCode},#{postCode},#{defaultFlag},#{loginUserCode},NOW(),UUDI()
+		   ,0,NOW(),#{loginUserCode})
+	</insert>
+</mapper>

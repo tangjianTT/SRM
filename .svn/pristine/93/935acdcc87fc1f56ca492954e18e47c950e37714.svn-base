@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.dict.DictSubDOMapper">
+<resultMap type="com.neusoft.srm.model.dict.DictSubDO"
+	id="subDictResult" autoMapping="true"></resultMap>
+	<!-- 通过主字典编码数组 批量删除子字典 -->
+	<update id="delBatchDictSubByDictMainCodeAy">
+		UPDATE 
+				T_SYS_DICT_SUB
+			SET
+				DEL_FLAG 		 = 	'1' ,
+				GMT_MODIFIED 	 = 	NOW(),
+				LAST_MODIFIED_BY =  #{userCode}
+		WHERE
+						  	  1  =	1
+				AND
+					DICT_MAIN_CODE
+							IN 
+							 <foreach collection="dictMainCodeAy" index="index" item="item" open="(" separator="," close=")" >
+									${item}
+							</foreach>
+	</update>
+	<!-- 通过子字典编码数组 批量删除子字典 -->
+	<update id="delBatchDictSubByDictSubCodeAy">
+		UPDATE 
+				T_SYS_DICT_SUB
+			SET
+				DEL_FLAG 		 = 	'1' ,
+				GMT_MODIFIED 	 = 	NOW(),
+				LAST_MODIFIED_BY =  #{userCode}
+		WHERE
+							  1  =	1
+				AND
+					DICT_SUB_CODE
+							IN 
+							<foreach collection="dictSubCodeAy" index="index" item="item" open="(" separator="," close=")" >
+									${item}
+							</foreach>
+	</update>
+	<!--  通过主字典编码查询子字典集合 -->
+	<select id="selectSubDictListByDictMainCode"
+	resultMap="subDictResult">
+		SELECT 
+				DICT_SUB_CODE, 
+				ID, 
+				DICT_MAIN_CODE, 
+				LABLE_KEY, 
+				LABLE_NAME, 
+				SORT_NO, 
+				GMT_CREATE, 
+				CREATE_BY, 
+				GMT_MODIFIED, 
+				LAST_MODIFIED_BY, 
+				REMARK, 
+				DEL_FLAG, 
+				TXT_1, 
+				TXT_2
+		FROM
+			T_SYS_DICT_SUB
+		WHERE
+			 	DICT_MAIN_CODE = #{dictMainCode}
+			 AND
+			 	DEL_FLAG 	   = '0'
+		ORDER BY 
+				GMT_MODIFIED ASC
+	</select>
+	<!-- 通过子字典编码查询子字典集合 -->
+	<select id="selectSubDictByDictSubCode" resultMap="subDictResult">
+		SELECT 
+				DICT_SUB_CODE,
+				ID,
+				DICT_MAIN_CODE,
+				LABLE_KEY,
+				LABLE_NAME
+		FROM
+			T_SYS_DICT_SUB
+		WHERE
+			 	DICT_SUB_CODE 	= #{dictSubCode}
+			 AND
+			 	DEL_FLAG 	   	= '0'
+	</select>
+	<!-- 插入子字典数据 -->
+	<insert id="insertDictSub">	
+		INSERT INTO 
+			T_SYS_DICT_SUB 
+				(
+					DICT_SUB_CODE, 
+					ID, 
+					DICT_MAIN_CODE, 
+					LABLE_KEY, 
+					LABLE_NAME, 
+					SORT_NO, 
+					GMT_CREATE, 
+					CREATE_BY, 
+					GMT_MODIFIED, 
+					LAST_MODIFIED_BY, 
+					REMARK, 
+					DEL_FLAG, 
+					TXT_1, 
+					TXT_2
+				)
+			VALUES
+				(
+					#{dictSub.dictSubCode}, 
+					UUID(), 
+					#{dictSub.dictMainCode}, 
+					#{dictSub.lableKey}, 
+					#{dictSub.lableName}, 
+					#{dictSub.sortNo}, 
+					NOW(), 
+					#{userCode}, 
+					NOW(), 
+					#{userCode}, 
+					#{dictSub.remark}, 
+					'0', 
+					#{dictSub.txt1}, 
+					#{dictSub.txt2}
+				)
+	
+	</insert>
+	<!-- 更新子字典数据 -->
+	<update id="updateDictSub">
+		UPDATE
+			T_SYS_DICT_SUB 
+				SET
+					DICT_MAIN_CODE 		= 	#{dictSub.dictMainCode} , 
+					LABLE_KEY 			= 	#{dictSub.lableKey} , 
+					LABLE_NAME 			= 	#{dictSub.lableName} , 
+					SORT_NO 			= 	#{dictSub.sortNo} , 
+					GMT_MODIFIED 		= 	NOW() , 
+					LAST_MODIFIED_BY 	= 	#{userCode} , 
+					REMARK 				= 	#{dictSub.remark}
+			WHERE
+					DICT_SUB_CODE 		= 	#{dictSub.dictSubCode} 
+				AND
+					DEL_FLAG 			=	'0'		
+	</update>
+</mapper>

@@ -1,0 +1,116 @@
+package com.neusoft.srm.model.dept;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import org.springframework.stereotype.Repository;
+
+/**
+ * 
+ * @部门： 软件开发事业部
+ * @作成者： 刘昊鑫
+ * @author:HaoXin.Liu
+ * @开发日期：  2018年12月10日
+ * @功能描述：部门业务类型封装类
+ */
+@Repository
+public class BizTypeDO implements Serializable{
+	private static final long serialVersionUID = 1L;
+	/**业务类型编码*/
+	private String bizTypeCode;
+	/**业务类型名称*/
+	private String bizTypeName;
+	/**废弃状态*/
+	private Integer delFlag;
+	/**业务类型id*/
+	private String id;
+	/**序号*/
+	private Integer sortNo;
+	/**创建时间*/
+	private Date gmtCreate;
+	/**创建人*/
+	private String createBy;
+	/**修改时间*/
+	private Date gmtModified;
+	/**修改人*/
+	private String lastModifiedBy;
+
+	public String getBizTypeCode() {
+		return bizTypeCode;
+	}
+
+	public void setBizTypeCode(String bizTypeCode) {
+		this.bizTypeCode = bizTypeCode ;
+	}
+
+	public String getBizTypeName() {
+		return bizTypeName;
+	}
+
+	public void setBizTypeName(String bizTypeName) {
+		this.bizTypeName = bizTypeName;
+	}
+
+	public Integer getDelFlag() {
+		return delFlag;
+	}
+
+	public void setDelFlag(Integer delFlag) {
+		this.delFlag = delFlag;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id ;
+	}
+
+	public Integer getSortNo() {
+		return sortNo;
+	}
+
+	public void setSortNo(Integer sortNo) {
+		this.sortNo = sortNo;
+	}
+
+	public Date getGmtCreate() {
+		return gmtCreate;
+	}
+
+	public void setGmtCreate(Date gmtCreate) {
+		this.gmtCreate = gmtCreate;
+	}
+
+	public String getCreateBy() {
+		return createBy;
+	}
+
+	public void setCreateBy(String createBy) {
+		this.createBy =  createBy;
+	}
+
+	public Date getGmtModified() {
+		return gmtModified;
+	}
+
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
+	}
+
+	public String getLastModifiedBy() {
+		return lastModifiedBy;
+	}
+
+	public void setLastModifiedBy(String lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
+	}
+
+	@Override
+	public String toString() {
+		return "BizTypeDO [bizTypeCode=" + bizTypeCode + ", bizTypeName=" + bizTypeName + ", delFlag=" + delFlag
+				+ ", id=" + id + ", sortNo=" + sortNo + ", gmtCreate=" + gmtCreate + ", createBy=" + createBy
+				+ ", gmtModified=" + gmtModified + ", lastModifiedBy=" + lastModifiedBy + "]";
+	}
+}

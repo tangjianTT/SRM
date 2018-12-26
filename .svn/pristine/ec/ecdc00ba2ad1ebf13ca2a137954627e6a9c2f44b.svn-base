@@ -1,0 +1,184 @@
+package com.neusoft.srm.service.menu.Impl;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.neusoft.srm.mapper.menu.MenuMapper;
+import com.neusoft.srm.model.common.Tree;
+import com.neusoft.srm.model.common.TreeState;
+import com.neusoft.srm.model.menu.Menu;
+import com.neusoft.srm.service.menu.MenuService;
+import com.neusoft.srm.util.AutoProduceCode;
+@Service
+@Transactional(rollbackFor= {Exception.class,RuntimeException.class})
+public class MenuServiceImpl implements MenuService{
+	@Autowired
+	private MenuMapper menuMapper;
+	/**
+	 * 部门：上海软件研发中心
+	 * 功能：获取树结构
+	 * 描述：
+	 * 作成者：王高亮
+	 * 返回值：
+	 * 作成时间：2018/12/13
+	 */
+	@Override
+	public Tree getAllMenu(String menuRoot) {
+		List<Map<String, String>> menuList = menuMapper.getAllMenu();
+		Tree rootTree = new Tree();
+		initTree(rootTree, menuList, menuRoot);
+		return rootTree;
+	}
+
+	private void initTree(Tree rootTree, List<Map<String, String>> allMenus, String selfCode) {
+		Iterator<Map<String, String>> menuIterator = allMenus.iterator();
+		while (menuIterator.hasNext()) {
+			Map<String, String> tmp = menuIterator.next();
+			// 初始化自身节点
+			if (tmp.get("MENU_CODE").equals(selfCode)) {
+				menuToTree(tmp, rootTree);
+			} else if (tmp.get("PARENT_MENU_CODE").equals(selfCode)) {
+				// 初始化子节点
+				Tree children = new Tree();
+				menuToTree(tmp, children);
+				if (null != children.getId()) {
+					if (null == rootTree.getChildren()) {
+						rootTree.setChildren(new ArrayList<Tree>());
+					}
+					rootTree.getChildren().add(children);
+				}
+				// 递归
+				initTree(children, allMenus, tmp.get("MENU_CODE"));
+			}
+		}
+	}
+
+	private void menuToTree(Map<String, String> menu, Tree tree) {
+		tree.setId(menu.get("MENU_CODE"));
+		tree.setLabel(menu.get("MENU_NAME"));
+		tree.setAttributes(menu);
+		TreeState state = new TreeState();
+		if (null != menu.get("CHECKED") && "Y".equals(menu.get("CHECKED"))) {
+			state.setChecked(true);
+		}
+		if (null != menu.get("SELECTED") && "Y".equals(menu.get("SELECTED"))) {
+			state.setSelected(true);
+		}
+		tree.setState(state);
+	}
+	/**
+	 * 部门：上海软件研发中心
+	 * 功能：
+	 * 描述：
+	 * 作成者：王高亮
+	 * 返回值：
+	 * 作成时间：2018/12/16
+	 */
+	@Override
+	public int saveMenu(Menu menu,String loginCode) {
+		//设置创建人，修改人
+		menu.setCreateBy(loginCode);
+		menu.setLastModifiedBy(loginCode);
+		MenuServiceImpl menuServiceImpl = new MenuServiceImpl();
+		//判断为空，表示新增菜单
+		if (null == menu.getMenuCode()) {
+			//获取菜单编号
+			AutoProduceCode autoProduceCode = new AutoProduceCode();
+			String produceCode = autoProduceCode.produceCode();
+			menu.setMenuCode(produceCode);
+			//判断新增的是目录还是菜单，目录2，菜单1
+			if (menu.getType() == 1) {
+				//生成菜单AuthCode
+				String newAuthCode = menuServiceImpl.getAuthCode(menu.getParentMenuCode());
+				//生成菜单SortNo
+				int newSortNo = menuServiceImpl.getSortNo(menu.getParentMenuCode());
+				menu.setAuthCode(newAuthCode);
+				menu.setSortNo(newSortNo);
+				int returnMsg = menuMapper.insertMenu(menu);
+				return returnMsg;
+			}else {
+				//生成目录SORT_NO
+				int sortNo = menuServiceImpl.getParentSortNo(menu.getType(), menu.getParentMenuCode());
+				//目录的AuthCode为其自身的MenuCode
+				menu.setAuthCode(menu.getMenuCode());
+				menu.setSortNo(sortNo);
+				int returnMsg = menuMapper.insertMenu(menu);
+				return returnMsg;
+			}
+		}else {
+			int returnMsg = menuMapper.updateMenu(menu);
+			return returnMsg;
+		}
+	}
+	/**
+	 * 部门：上海软件研发中心
+	 * 功能：
+	 * 描述：
+	 * 作成者：王高亮
+	 * 返回值：
+	 * 作成时间：2018/12/16
+	 */
+	@Override
+	public int removeMenu(String menuCode,String operatorCode) {
+		int returnMsg = menuMapper.deleteMenu(menuCode,operatorCode);
+		return returnMsg;
+	}
+	/**
+	 * 部门：上海软件研发中心
+	 * 功能：当type为1，增加菜单时，生成authCode
+	 * 描述：参数父类菜单代码
+	 * 作成者：王高亮
+	 * 返回值：
+	 * 作成时间：2018/12/13
+	 */
+	private String getAuthCode(String parentMenuCode) {
+		//获得当前父菜单下子菜单的最大AuthCode值
+		String MaxAuthCode = menuMapper.findMaxAuthCodeByparentMenuCode(parentMenuCode);
+		//转化为int类型
+		int authCode=Integer.parseInt(MaxAuthCode);
+		//获得当前新增菜单的authCode值
+		int authCode1=authCode+1;
+		//转化为string类型，传入menu对象
+		String newAuthCode=Integer.toString(authCode1);
+		return newAuthCode;
+	}
+	/**
+	 * 部门：上海软件研发中心
+	 * 功能：当type为1，增加菜单时，生成SortNo
+	 * 描述：参数父类菜单代码
+	 * 作成者：王高亮
+	 * 返回值：
+	 * 作成时间：2018/12/13
+	 */
+	private int getSortNo(String parentMenuCode) {
+		// 获得当前父菜单下子菜单的最大SortNo值
+		int sortNo = menuMapper.findMaxSortNoByparentMenuCode(parentMenuCode);
+		// 获得当前新增菜单的SortNo值
+		int sortNo1 = sortNo + 1;
+		return sortNo1;
+	}
+	/**
+	 * 部门：上海软件研发中心
+	 * 功能：当type为2，增加目录时，生成SortNo
+	 * 描述：参数父类菜单代码
+	 * 作成者：王高亮
+	 * 返回值：
+	 * 作成时间：2018/12/13
+	 */
+	private int getParentSortNo(int type,String parentMenuCode) {
+		//获取parentMenuCode，当其值为0时，SortNo为1，否则SortNo值+1
+		if (parentMenuCode == (0+"")) {
+			int sortNo = 1;
+			return sortNo;
+		}else {
+			int sortNo = menuMapper.findMaxParentSortNo(type);
+			int sortNo1 = sortNo+1;
+			return sortNo1;
+		}
+	}
+}

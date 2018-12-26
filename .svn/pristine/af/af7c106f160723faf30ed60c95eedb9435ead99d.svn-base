@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.dept.DeptDOMapper">
+	<resultMap type="com.neusoft.srm.model.dept.DeptDO"
+		id="deptDOParam" autoMapping="true">
+		<id property="deptCode" column="DEPT_CODE" />
+		<association property="deptType"
+			javaType="com.neusoft.srm.model.dept.DeptTypeDO">
+			<id property="deptTypeCode" column="DEPT_TYPE_CODE" />
+			<result property="deptTypeName" column="DEPT_TYPE_NAME" />
+		</association>
+		<collection property="bizTypeList"
+			ofType="com.neusoft.srm.model.dept.BizTypeDO">
+			<id property="bizTypeCode" column="BIZ_TYPE_CODE" />
+			<result property="bizTypeName" column="BIZ_TYPE_NAME" />
+		</collection>
+		<collection column="DEPT_CODE" property="deptChildList"
+			ofType="com.neusoft.srm.model.dept.DeptDO"
+			javaType="java.util.ArrayList" select="selectDeptChildrenById" />
+	</resultMap>
+	<!-- 查询所有部门数据 -->
+	<select id="findListDept" resultMap="deptDOParam">
+		SELECT
+				TSD.DEPT_CODE,
+				TSD.DEPT_NAME,
+				TSD.DEPT_NAME_J,
+				TSD.PARENT_DEPT_CODE,
+				TSD.AUTH_CODE,
+				TSD.DEPT_TYPE_CODE,
+				TSD.REMARK,
+				TSD.DEL_FLAG,
+				TSD.ID,
+				TSD.SORT_NO,
+				TCDT.DEPT_TYPE_CODE,
+				TCDT.DEPT_TYPE_NAME,
+				TCBT.BIZ_TYPE_CODE,
+				TCBT.BIZ_TYPE_NAME
+		FROM
+				T_SYS_DEPT TSD
+			LEFT JOIN
+				T_CODE_DEPT_TYPE TCDT
+		ON
+				TSD.DEPT_TYPE_CODE = TCDT.DEPT_TYPE_CODE
+			LEFT JOIN
+				T_SYS_DEPT_BIZ_TYPE	TSDB
+		ON 
+				TSDB.DEPT_CODE = TSD.DEPT_CODE
+			LEFT JOIN
+				T_CODE_BIZ_TYPE TCBT
+		ON
+				TCBT.BIZ_TYPE_CODE = TSDB.BIZ_TYPE_CODE
+			WHERE
+				TSD.DEL_FLAG = 0
+		AND
+			TSDB.DEL_FLAG = 0
+		AND
+			TSD.PARENT_DEPT_CODE='0'
+	</select>
+	<!-- 再递归查询出一级部门下的所有子部门 -->
+	<select id="selectDeptChildrenById" resultMap="deptDOParam"
+		parameterType="java.lang.String">
+		SELECT 
+				DEPT_CODE,
+				DEPT_NAME,
+				DEPT_NAME_J,
+				PARENT_DEPT_CODE,
+				AUTH_CODE,
+				DEPT_TYPE_CODE,
+				REMARK,
+				DEL_FLAG,
+				ID
+		FROM
+			T_SYS_DEPT
+		WHERE
+				DEL_FLAG = 0
+		AND
+				PARENT_DEPT_CODE = #{DEPT_CODE}
+	</select>
+	<!-- 根据父类部门编码 查询部门信息 -->
+	<select id="queryParentDeptByParentDeptCode"
+	resultType="com.neusoft.srm.model.dept.DeptDO">
+		SELECT
+				DEPT_CODE, 
+				DEPT_NAME, 
+				DEPT_NAME_J, 
+				PARENT_DEPT_CODE, 
+				AUTH_CODE, 
+				DEPT_TYPE_CODE, 
+				REMARK, 
+				DEL_FLAG, 
+				ID 
+		FROM 
+				T_SYS_DEPT 
+		WHERE
+				DEPT_CODE = #{parentDeptCode}
+			AND
+				DEL_FLAG  = '0'
+	</select>
+	
+	<select id="queryMaxAuthCodeByParentDeptCode"
+	resultType="java.lang.String">
+		SELECT
+				MAX(AUTH_CODE)
+		FROM
+			T_SYS_DEPT
+		WHERE
+				PARENT_DEPT_CODE=#{parentDeptCode}
+			AND
+				DEL_FLAG  = '0'
+	</select>
+	
+	<!-- 统计部门人数 -->
+	<select id="countDeptUserByDeptCodAndAuthCode" resultType="java.lang.Integer">
+		SELECT
+				COUNT(1)
+			FROM 
+				T_SYS_USER_DEPT TSUD
+			WHERE 
+				EXISTS
+						(	SELECT
+								*
+							FROM 
+								T_SYS_DEPT TSD
+							WHERE
+										TSUD.DEPT_CODE = TSD.DEPT_CODE
+								AND 
+										TSUD.DEL_FLAG='0' 
+								AND 
+										TSD.DEL_FLAG='0'
+								AND
+								(
+										TSD.DEPT_CODE  =  #{deptCode}
+									OR
+										TSD.AUTH_CODE
+									LIKE
+										CONCAT(#{deptCode},'%')
+								)
+						)
+	</select>
+	<!-- 通过用户编码查询部门信息 -->
+	<select id="queryDeptByUserCode" resultMap="deptDOParam">
+		SELECT 
+				TSD.DEPT_CODE, 
+				TSD.DEPT_NAME, 
+				TSD.DEPT_NAME_J, 
+				TSD.PARENT_DEPT_CODE, 
+				TSD.AUTH_CODE, 
+				TSD.DEPT_TYPE_CODE, 
+				TSD.REMARK, 
+				TSD.DEL_FLAG, 
+				TSD.ID, 
+				TSD.SORT_NO, 
+				TSD.GMT_CREATE, 
+				TSD.CREATE_BY, 
+				TSD.GMT_MODIFIED, 
+				TSD.LAST_MODIFIED_BY
+		FROM
+			T_SYS_DEPT TSD 
+		LEFT JOIN 
+				T_SYS_USER_DEPT TSUD 
+			ON 
+						TSD.DEPT_CODE 	= 	TSUD.DEPT_CODE
+			WHERE 
+						TSUD.USER_CODE 	= 	#{userCode}
+					AND 
+						TSD.DEL_FLAG 	= 	'0'
+	</select>
+	<!-- 插入部门信息 -->
+	<insert id="insertDept"
+		parameterType="com.neusoft.srm.model.dept.DeptDO">
+		INSERT INTO 
+			T_SYS_DEPT
+				(
+					DEPT_CODE,
+					DEPT_NAME,
+					DEPT_NAME_J,
+					PARENT_DEPT_CODE,
+					AUTH_CODE,
+					DEPT_TYPE_CODE,
+					REMARK,
+					DEL_FLAG,
+					ID,
+					SORT_NO,
+					GMT_CREATE,
+					CREATE_BY,
+					GMT_MODIFIED,
+					LAST_MODIFIED_BY
+				)
+		VALUES
+				(
+					#{deptDO.deptCode},
+					#{deptDO.deptName},
+					#{deptDO.deptNameJ},
+					#{deptDO.parentDeptCode},
+					#{deptDO.authCode},
+					#{deptDO.deptTypeCode},
+					#{deptDO.remark},
+					'0',
+					UUID(),
+					'0',
+					NOW(),
+					#{deptDO.createBy},
+					NOW(),
+					#{deptDO.lastModifiedBy}
+				)
+	</insert>
+
+	<!-- 逻辑删除部门信息 -->
+	<update id="deleteDeptByDeptCode">
+		UPDATE
+			T_SYS_DEPT
+		SET 
+				DEL_FLAG 	 	 = '1',
+				GMT_MODIFIED 	 = NOW(),
+				LAST_MODIFIED_BY = #{lastModifiedBy}
+		WHERE
+				DEPT_CODE 		 = #{deptCode}
+		OR 
+				AUTH_CODE
+			LIKE 
+				CONCAT(#{deptCode},'%')
+	</update>
+	<!-- 更新部门信息 -->
+	<update id="updateDept"
+		parameterType="com.neusoft.srm.model.dept.DeptDO">
+		UPDATE 
+			T_SYS_DEPT
+		SET
+			DEPT_NAME 		 = #{deptDO.deptName} ,
+			DEPT_NAME_J 	 = #{deptDO.deptNameJ} ,
+			PARENT_DEPT_CODE = #{deptDO.parentDeptCode} ,
+			AUTH_CODE 		 = #{deptDO.authCode} ,
+			DEPT_TYPE_CODE 	 = #{deptDO.deptTypeCode} ,
+			REMARK 			 = #{deptDO.remark} ,
+			GMT_MODIFIED 	 = NOW() ,
+			LAST_MODIFIED_BY = #{deptDO.lastModifiedBy}
+		WHERE
+			DEPT_CODE = #{deptDO.deptCode}
+	</update>
+	
+	<!-- 武哥修改的代码 -->
+	<select id="getAllDept" resultType="map">
+		SELECT A.DEPT_CODE,
+				A.DEPT_NAME,
+				A.DEPT_NAME_J,
+				A.PARENT_DEPT_CODE,
+				A.AUTH_CODE,
+				A.DEPT_TYPE_CODE,
+				B.DEPT_TYPE_NAME,
+				C.BIZ_TYPE_CODE,
+				CONCAT(C.BIZ_TYPE_NAME,',') BIZ_TYPE_NAME,
+				A.REMARK,
+				A.SORT_NO
+		FROM 
+				T_SYS_DEPT A
+		LEFT JOIN
+			(SELECT T1.DEPT_CODE, GROUP_CONCAT(T1.BIZ_TYPE_CODE) BIZ_TYPE_CODE, GROUP_CONCAT(T2.BIZ_TYPE_NAME) BIZ_TYPE_NAME
+				FROM T_SYS_DEPT_BIZ_TYPE T1, T_CODE_BIZ_TYPE T2
+				WHERE T1.BIZ_TYPE_CODE = T2.BIZ_TYPE_CODE
+		AND T1.DEL_FLAG = 0
+		AND T2.DEL_FLAG = 0
+		GROUP BY T1.DEPT_CODE) C
+		ON A.DEPT_CODE = C.DEPT_CODE, T_CODE_DEPT_TYPE B
+		WHERE A.DEPT_TYPE_CODE = B.DEPT_TYPE_CODE AND A.DEL_FLAG = 0
+		ORDER BY A.SORT_NO
+	</select>
+
+	<select id="getDeptTypeList" resultType="map" >
+		SELECT
+			T.DEPT_TYPE_CODE,
+			T.DEPT_TYPE_NAME
+		FROM
+			T_CODE_DEPT_TYPE T
+		WHERE T.DEL_FLAG = 0
+		ORDER BY T.ID
+	</select>
+
+	<select id="countUserUnderDept" resultType="int" >
+		SELECT
+			COUNT(1)
+		FROM
+			T_SYS_USER T
+		WHERE T.DEPT_CODE  ()
+	</select>
+	
+	<!-- 查询父类deptCode -->
+	<select id="findListParentDeptCode" resultType="String">
+	   SELECT 
+	     PARENT_DEPT_CODE
+       FROM 
+	     T_SYS_DEPT 
+       WHERE DEL_FLAG='0'
+	</select>
+	
+	<!-- 查询子类deptCode -->
+	<select id="findListDeptCode"  resultType="String">
+	   SELECT 
+	      DEPT_CODE
+       FROM 
+	      T_SYS_DEPT 
+       WHERE DEL_FLAG='0'
+	</select>
+</mapper>

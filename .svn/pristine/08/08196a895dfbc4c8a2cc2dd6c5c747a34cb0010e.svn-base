@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.log.LoginLogMapper">
+	<resultMap type="com.neusoft.srm.model.log.LoginLogDO"
+		id="accessLogRusult" autoMapping="true"></resultMap>
+	<!-- 按条件查询所有登录日志 -->
+	<select id="selectLoginLogByCond" resultMap="accessLogRusult">
+		SELECT 
+				LOGIN_CODE,
+				ID,APPID,
+				METHOD,
+				OPERATION_TIME,
+				STATION_ID,
+				STATION,PROVINCE,
+				CITY,
+				USER_ID,
+				USER_NAME,
+				SOURCE_TYPE,
+				SOURCE_APPLICATION,
+				SOURCE_PUBLIC_IP,
+				SOURCE_PRIVATE_IP,
+				SOURCE_VPN_IP,
+				SOURCE_MAC,
+				TARGET_APPLICATION,
+				TARGET_PUBLIC_IP,
+				TARGET_PRIVATE_IP,
+				OPERATION_TYPE,
+				RESULTS,REASON,
+				FEATURE,
+				DEL_FLAG,
+				SORT_NO,
+				GMT_CREATE,
+				CREATE_BY,
+				GMT_MODIFIED,
+				LAST_MODIFIED_BY,
+				REQUEST_PARAM_JSON
+		FROM
+			T_SYS_LOGIN_LOG
+		WHERE 
+					   1 = 1
+			AND
+				DEL_FLAG = '0'
+		<if test="userName != null and userName != '' ">
+			AND 
+				USER_NAME LIKE CONCAT(CONCAT('%',#{userName}),'%')
+		</if>
+		<if test="gmtCreateFrom != null and gmtCreateFrom != '' ">
+			AND
+						GMT_CREATE 
+			BETWEEN 	#{gmtCreateFrom} 
+				AND
+						#{gmtCreateEnd}
+		</if>
+		ORDER BY
+		 		GMT_MODIFIED ASC
+	</select>
+	<!-- 按条件统计所有登录日志 -->
+	<select id="countLoginLogByCond" resultType="java.lang.Integer">
+		SELECT
+				COUNT(1)
+		FROM
+				T_SYS_LOGIN_LOG
+		WHERE
+				1=1
+		<if test="userName != null">
+			AND
+				USER_NAME LIKE CONCAT(#{userName},'%')
+		</if>
+		<if test="gmtCreateFrom != null">
+			AND 
+				GMT_CREATE 
+					BETWEEN #{gmtCreateFrom} 
+						AND
+							#{gmtCreateEnd}
+		</if>
+	</select>
+	<!-- 插入登录日志信息 -->
+	<insert id="insertLoginLog">
+		INSERT INTO 
+				T_SYS_LOGIN_LOG 
+					(
+						LOGIN_CODE, 
+						ID, 
+						APPID, 
+						METHOD, 
+						OPERATION_TIME, 
+						STATION_ID, 
+						STATION, 
+						PROVINCE, 
+						CITY, 
+						USER_ID, 
+						USER_NAME, 
+						SOURCE_TYPE, 
+						SOURCE_APPLICATION, 
+						SOURCE_PUBLIC_IP, 
+						SOURCE_PRIVATE_IP, 
+						SOURCE_VPN_IP, 
+						SOURCE_MAC, 
+						TARGET_APPLICATION, 
+						TARGET_PUBLIC_IP, 
+						TARGET_PRIVATE_IP, 
+						OPERATION_TYPE, 
+						RESULTS, 
+						REASON, 
+						FEATURE, 
+						DEL_FLAG, 
+						SORT_NO, 
+						GMT_CREATE, 
+						CREATE_BY, 
+						GMT_MODIFIED, 
+						LAST_MODIFIED_BY,
+						REQUEST_PARAM_JSON
+					)
+			VALUES
+					(
+						#{loginLogDO.loginCode}, 
+						UUID(), 
+						'rrs_srm', 
+						'1', 
+						NOW(), 
+						#{loginLogDO.stationId}, 
+						#{loginLogDO.station}, 
+						#{loginLogDO.province}, 
+						#{loginLogDO.city}, 
+						#{loginLogDO.userId}, 
+						#{loginLogDO.userName}, 
+						#{loginLogDO.sourceType}, 
+						#{loginLogDO.sourceApplication}, 
+						#{loginLogDO.sourcePublicIp}, 
+						#{loginLogDO.sourcePrivateIp} , 
+						#{loginLogDO.sourceVpnIp}, 
+						#{loginLogDO.sourceMac}, 
+						#{loginLogDO.targetApplication}, 
+						#{loginLogDO.targetPublicIp}, 
+						#{loginLogDO.targetPrivateIp}, 
+						#{loginLogDO.operationType}, 
+						#{loginLogDO.results}, 
+						#{loginLogDO.reason}, 
+						#{loginLogDO.feature}, 
+						'0', 
+						'0', 
+						NOW(), 
+						#{loginLogDO.createBy}, 
+						NOW(), 
+						#{loginLogDO.lastModifiedBy},
+						#{loginLogDO.requestParamJson}
+					)
+	</insert>
+</mapper>

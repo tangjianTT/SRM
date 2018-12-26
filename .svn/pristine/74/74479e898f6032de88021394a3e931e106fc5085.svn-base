@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.operaflow.OperFlowMapper">
+	<!-- OperFlow的分页查询（条件查询） -->
+	<select id="findOperaList" resultType="java.util.HashMap">
+       SELECT 
+	     co.OPERA_FLOW_CODE, 
+	     co.BIZ_TYPE_CODE, 
+	     co.OPERA_FLOW_TITLE, 
+	     co.OPERA_FLOW_DESC, 
+	     co.ONLINE_FILE_URL, 
+	     co.ONLINE_FILE_NAME, 
+	     co.AUTH_DEPT_CODE, 
+	     co.AUTH_DEPT_TYPE_CODE, 
+	     co.AUTH_AUTH_CODE, 
+	     co.STAG_FLAG, 
+	     co.DEL_FLAG, 
+	     co.ID, 
+	     co.SORT_NO, 
+	     DATE_FORMAT(co.GMT_CREATE,"%Y-%m-%d %h:%m:%s") AS GMT_CREATE, 
+      	 co.CREATE_BY, 
+        DATE_FORMAT(co.GMT_MODIFIED,"%Y-%m-%d %h:%m:%s") AS GMT_MODIFIED, 
+	     co.LAST_MODIFIED_BY,
+	     bt.BIZ_TYPE_NAME,
+	     su.USER_NAME
+       FROM 
+         T_CONFIG_OPERA co 
+       LEFT JOIN T_CODE_BIZ_TYPE bt ON  co.BIZ_TYPE_CODE=bt.BIZ_TYPE_CODE
+       LEFT JOIN T_SYS_USER su ON co.CREATE_BY = su.USER_CODE
+         WHERE 
+       <if test="deptCode!='' and deptCode !=null">
+           co.CREATE_BY 
+             IN 
+             (SELECT 
+                USER_CODE 
+              FROM  
+                T_SYS_USER_DEPT 
+              WHERE 
+                DEPT_CODE 
+                  IN
+                  (SELECT 
+                     DEPT_CODE 
+                   FROM 
+                     T_SYS_DEPT 
+                   WHERE 
+                     AUTH_CODE LIKE  #{deptCode} 
+                   AND 
+                     DEL_FLAG=0) 
+               AND 
+                 DEL_FLAG=0) 
+               AND 
+              </if>
+               co.DEL_FLAG=0
+           <if test=" operaFlowTitle != null and operaFlowTitle != ''">
+             AND co.OPERA_FLOW_TITLE  LIKE CONCAT(CONCAT('%',#{operaFlowTitle}),'%')  
+           </if>
+           <if test=' bizTypeCode != null and bizTypeCode != "" and bizTypeCode != "2" '>
+             AND co.BIZ_TYPE_CODE = #{bizTypeCode}
+           </if>
+           <if test=" gmtCreateStart != null and gmtCreateStart != '' or gmtCreateEnd != null and gmtCreateEnd != ''">
+             AND  co.GMT_CREATE  BETWEEN #{gmtCreateStart} AND #{gmtCreateEnd}
+           </if> 
+            ORDER BY co.GMT_MODIFIED DESC
+	</select>
+	
+	<!-- 根据operaFlowCode查询附件信息 -->
+	<select id="findOperaFileList" resultType="java.util.HashMap">
+       SELECT 	
+         OPERA_FLOW_CODE, 
+	     ATTACH_FILE_NAME, 
+	     ATTACH_FILE_OLD_NAME, 
+	     ATTACH_FILE_URL, 
+	     DEL_FLAG, 
+	     ID, 
+	     SORT_NO, 
+	     GMT_CREATE, 
+	     CREATE_BY, 
+	     GMT_MODIFIED, 
+	     LAST_MODIFIED_BY
+	   FROM 
+	     srm.T_CONFIG_OPERA_ATTACH_FILE 
+	   WHERE OPERA_FLOW_CODE = #{operaFlowCode}
+	</select>
+	
+	<!-- OperFlow的删除（假删，更改状态值） -->
+	<update id="removeOperFlowByOperaFlowCode">
+	   UPDATE srm.T_CONFIG_OPERA 
+	   SET
+	     DEL_FLAG = 1 , 
+	     GMT_MODIFIED = NOW() , 
+	     LAST_MODIFIED_BY = #{userCode}
+	   WHERE  
+	     OPERA_FLOW_CODE IN
+	   <foreach collection="operaFlowCode" item="operaFlowCode" open="(" separator="," close=")">
+			#{operaFlowCode}
+		</foreach>   
+	</update>
+
+    <!-- OperFlowFile的删除（假删，更改状态值） -->
+    <update id="removeOperFlowFileByOperaFlowCode">
+       UPDATE srm.T_CONFIG_OPERA_ATTACH_FILE 
+	   SET
+	     DEL_FLAG = '1' ,  
+	     GMT_MODIFIED = NOW() , 
+	     LAST_MODIFIED_BY = #{userCode}
+	   WHERE
+	     OPERA_FLOW_CODE IN
+	   <foreach collection="operaFlowCode" item="operaFlowCode" open="(" separator="," close=")">
+			#{operaFlowCode}
+	   </foreach>      
+    </update>
+    
+    <!-- 通过id进行对opera File的假删 -->
+    <update id="removeOperFlowFileById">
+       UPDATE srm.T_CONFIG_OPERA_ATTACH_FILE 
+	   SET
+	     DEL_FLAG = '1' , 
+	     GMT_MODIFIED = NOW() , 
+	     LAST_MODIFIED_BY = #{userCode}
+	  WHERE
+	    ID  IN
+	   <foreach collection="id" item="id" open="(" separator="," close=")">
+			 #{id}
+	   </foreach>  
+    </update>
+    
+    <!-- 新增文档信息 -->
+    <insert id="insertOperaFlow">
+       INSERT INTO srm.T_CONFIG_OPERA 
+	     (OPERA_FLOW_CODE, 
+	      BIZ_TYPE_CODE, 
+	      OPERA_FLOW_TITLE, 
+	      ONLINE_FILE_URL, 
+          ONLINE_FILE_NAME, 
+	      AUTH_DEPT_CODE, 
+	      AUTH_DEPT_TYPE_CODE, 
+	      AUTH_AUTH_CODE, 
+	      STAG_FLAG, 
+	      DEL_FLAG, 
+	      ID, 
+	      SORT_NO, 
+	      GMT_CREATE, 
+	      CREATE_BY, 
+	      GMT_MODIFIED, 
+	      LAST_MODIFIED_BY
+	      )
+	    VALUES
+	      (#{operaDO.operaFlowCode}, 
+	       #{operaDO.bizTypeCode}, 
+	       #{operaDO.operaFlowTitle}, 
+	       #{operaDO.onlineFileUrl}, 
+	       #{operaDO.onlineFileName}, 
+	       #{operaDO.authDeptCode}, 
+	       #{operaDO.authDeptTypeCode}, 
+	       #{operaDO.authAuthCode}, 
+	       #{stagFlag}, 
+	       '0', 
+	       UUID(), 
+	       0, 
+	       NOW(), 
+	       #{userCode}, 
+	       NOW(), 
+	       #{userCode}
+	      );
+    </insert>
+    
+    <!-- 新增一个或多个OperaFile -->
+    <insert id="insertOperaFlowFile">
+       INSERT INTO srm.T_CONFIG_OPERA_ATTACH_FILE 
+	     (OPERA_FLOW_CODE, 
+	      ATTACH_FILE_NAME, 
+	      ATTACH_FILE_OLD_NAME, 
+	      ATTACH_FILE_URL, 
+	      DEL_FLAG, 
+	      ID, 
+	      SORT_NO, 
+	      GMT_CREATE, 
+	      CREATE_BY, 
+	      GMT_MODIFIED, 
+	      LAST_MODIFIED_BY
+	      )
+	    VALUES
+	   <foreach collection ="attachFileList" item="operaFileDO" separator =",">   
+	     (#{operaFileDO.operaFlowCode}, 
+	      #{operaFileDO.attachFileName}, 
+	      #{operaFileDO.attachFileOldName}, 
+          #{operaFileDO.attachFileUrl}, 
+	      '0', 
+	      UUID(), 
+	      '0', 
+	      NOW(), 
+	      #{userCode}, 
+	      NOW(), 
+	      #{userCode}
+	      )
+	   </foreach>
+    </insert>
+    
+    <!-- 更新opera信息 -->
+    <update id="updateOperaFlow">
+       UPDATE srm.T_CONFIG_OPERA 
+	   SET
+	     BIZ_TYPE_CODE =   #{operaDO.bizTypeCode},  
+	     OPERA_FLOW_TITLE =   #{operaDO.operaFlowTitle},  
+	     ONLINE_FILE_URL = #{operaDO.onlineFileUrl}, 
+	     ONLINE_FILE_NAME =  #{operaDO.operaFlowTitle}, 
+	     STAG_FLAG = '0' , 
+	     GMT_MODIFIED = NOW() , 
+	     LAST_MODIFIED_BY = #{userCode}
+      WHERE
+	    OPERA_FLOW_CODE = #{operaDO.operaFlowCode} ;
+    </update>
+    
+    <!-- 首页文档查询Opera信息 -->
+    <select id="findIndexOperaFlowList" resultType="java.util.HashMap">
+       SELECT 	OPERA_FLOW_CODE, 
+	     BIZ_TYPE_CODE, 
+	     OPERA_FLOW_TITLE, 
+	     OPERA_FLOW_DESC, 
+	     ONLINE_FILE_URL, 
+	     ONLINE_FILE_NAME, 
+	     AUTH_DEPT_CODE, 
+	     AUTH_DEPT_TYPE_CODE, 
+	     AUTH_AUTH_CODE, 
+	     STAG_FLAG, 
+	     DEL_FLAG, 
+	     ID, 
+	     SORT_NO, 
+	     GMT_CREATE, 
+         CREATE_BY, 
+	     GMT_MODIFIED, 
+	     LAST_MODIFIED_BY
+	   FROM 
+	     srm.T_CONFIG_OPERA 
+     <if test='bizTypeCode == "0" '>
+	   WHERE 
+	      BIZ_TYPE_CODE='0'
+	 </if>
+	 <if test='bizTypeCode == "1" '>
+	   WHERE 
+	      BIZ_TYPE_CODE='1'
+	 </if>
+	   ORDER BY GMT_MODIFIED DESC
+    </select>
+</mapper>

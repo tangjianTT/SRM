@@ -1,0 +1,41 @@
+package com.neusoft.srm.model.user;
+/**
+ * 
+ * @部门:软件开发事业部
+ * @作者:WangGaoLiang
+ * @开发日期2018/12/12
+ * @功能描述 用户类型：海尔或者客户
+ */
+public class UserType {
+ private String userTypeCode;
+ 
+ private String userTypeName;
+ 
+ private String delFlag;
+
+public String getUserTypeCode() {
+	return userTypeCode;
+}
+
+public void setUserTypeCode(String userTypeCode) {
+	this.userTypeCode = userTypeCode;
+}
+
+public String getUserTypeName() {
+	return userTypeName;
+}
+
+public void setUserTypeName(String userTypeName) {
+	this.userTypeName = userTypeName;
+}
+
+public String getDelFlag() {
+	return delFlag;
+}
+
+public void setDelFlag(String delFlag) {
+	this.delFlag = delFlag;
+}
+ 
+ 
+}

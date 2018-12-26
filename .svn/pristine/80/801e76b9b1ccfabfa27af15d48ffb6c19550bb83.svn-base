@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.dept.BizTypeDOMapper">
+	<resultMap type="com.neusoft.srm.model.dept.BizTypeDO"
+		id="bizTypeDOParam" autoMapping="true"></resultMap>
+	<!-- 查询所有业务类型的集合 -->
+	<select id="findListBizType" resultMap="bizTypeDOParam">
+		SELECT 
+					BIZ_TYPE_CODE,
+					BIZ_TYPE_NAME,
+					DEL_FLAG,
+					ID,
+					SORT_NO,
+					GMT_CREATE,
+					CREATE_BY,
+					GMT_MODIFIED,
+					LAST_MODIFIED_BY
+		FROM
+					T_CODE_BIZ_TYPE
+		WHERE 
+					DEL_FLAG = '0'
+	</select>
+</mapper>

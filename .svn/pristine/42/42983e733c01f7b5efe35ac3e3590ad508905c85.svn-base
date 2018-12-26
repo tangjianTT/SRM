@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.log.OperaLogMapper">
+	<resultMap type="com.neusoft.srm.model.log.OperaLogDO"
+		id="accessLogRusult" autoMapping="true"></resultMap>
+	<select id="selectOperaLogByCond" resultMap="accessLogRusult">
+		SELECT
+		ID,OPERA_CODE,METHOD,OPERATION_TIME,STATION,
+		STATION_CODE,PROVINCE,CITY,USER_ID,USER_NAME,
+		USER_ACNT,SOURCE_TYPE,SOURCE_APPLICATION,SOURCE_PUBLIC_IP,
+		SOURCE_PRIVATE_IP,SOURCE_VPN_IP,SOURCE_MAC,TARGET_APPLICATION,TARGET_PUBLIC_IP,
+		TARGET_PRIVATE_IP,OPERATION_TYPE,RESULT,
+		REASON,CONTENT,MAIL_NO,ORDER_ID,ASSOCIATION_NUMBER,EMAIL,FEATURE,
+		DEL_FLAG,SORT_NO,GMT_CREATE,CREATE_BY,GMT_MODIFIED,
+		LAST_MODIFIED_BY,APPID
+		FROM
+		T_SYS_OPERA_LOG
+		WHERE
+		1=1
+		<if test="userName != null">
+			AND USER_NAME LIKE CONCAT(#{userName},'%')
+		</if>
+		<if test="gmtCreateFrom != null">
+			AND GMT_CREATE BETWEEN #{gmtCreateFrom} AND
+			#{gmtCreateEnd}
+		</if>
+		LIMIT #{pageCurrentSize},#{pageSize}
+	</select>
+
+	<select id="countOperaLogByCond" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM
+		T_SYS_OPERA_LOG
+		WHERE
+		1=1
+		<if test="userName != null">
+			AND USER_NAME LIKE CONCAT(#{userName},'%')
+		</if>
+		<if test="gmtCreateFrom != null">
+			AND GMT_CREATE BETWEEN #{gmtCreateFrom} AND
+			#{gmtCreateEnd}
+		</if>
+	</select>
+</mapper>

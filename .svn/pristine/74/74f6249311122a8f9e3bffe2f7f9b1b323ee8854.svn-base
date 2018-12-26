@@ -1,0 +1,74 @@
+package com.neusoft.srm.service.menu.impl;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.neusoft.srm.mapper.menu.MenuButtonMapper;
+import com.neusoft.srm.model.menu.MenuButton;
+import com.neusoft.srm.service.menu.MenuButtonService;
+import com.neusoft.srm.util.AutoProduceCode;
+
+
+@Service
+@Transactional(rollbackFor= {Exception.class,RuntimeException.class})
+public class MenuButtonServiceImpl implements MenuButtonService {
+	@Autowired
+    private MenuButtonMapper menuButtonMapper;
+    /**
+	 * 部门：上海软件研发中心
+	 * 功能：菜单模块，获取全部按钮信息
+	 * 描述：参数  menuCode 菜单代码
+	 *      查找菜单代码对应的按钮信息
+	 * 返回值：返回菜单按钮的json串值
+	 * 作成者：王高亮
+	 * 作成时间：2018/12/13
+	 */
+	@Override
+	public List<MenuButton> getAllMenuButton(String menuCode) {
+		List<MenuButton> list = menuButtonMapper.findAllMenubutton(menuCode);
+		return list;
+	}
+	/**
+	 * 部门：上海软件研发中心
+	 * 功能：菜单模块，新增，修改按钮信息
+	 * 描述：参数  menuCode 菜单代码
+	 * 返回值：返回成功响应信息
+	 * 作成者：王高亮
+	 * 作成时间：2018/12/13
+	 */
+	@Override
+	public int saveMenuButton(MenuButton menuButton) {
+		//判断按钮Code是否为空，空就新增操作，非空修改操作
+		if (null == menuButton.getButtonCode()) {
+			//获取按钮编号
+			String produce = new AutoProduceCode().produceCode();
+			menuButton.setButtonCode(produce);
+			//新增按钮
+			int returnMsg = menuButtonMapper.insertMenubutton(menuButton);
+			return returnMsg;
+		}else {
+			//修改按钮
+			int returnMsg = menuButtonMapper.updateMenubutton(menuButton);
+			return returnMsg;
+		}
+	}
+	/**
+	 * 部门：上海软件研发中心
+	 * 功能：删除按钮信息
+	 * 描述：参数  buttonCode 按钮代码
+	 * 返回值：返回成功响应信息
+	 * 作成者：王高亮
+	 * 作成时间：2018/12/13
+	 */
+	@Override
+	public int removeMenuButton(String operatorCode, String buttonCode) {
+		String[] buttonCodes = buttonCode.split(",");
+		//删除按钮
+		int returnMsg = menuButtonMapper.deleteMenubutton(operatorCode, buttonCodes);
+		//逻辑删除角色菜单按钮关联表信息
+		menuButtonMapper.deleteRoleMenuButton(operatorCode, buttonCode);
+		return returnMsg;
+	}
+
+}

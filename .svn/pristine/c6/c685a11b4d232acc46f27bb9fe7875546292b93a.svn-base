@@ -1,0 +1,101 @@
+package com.neusoft.srm.model.user;
+/**
+ * 
+ * @部门:软件开发事业部
+ * @作者:WangGaoLiang
+ * @开发日期:2018/12/07
+ * @功能描述 用户部门关联表属性
+ */
+import java.util.Date;
+
+public class UserDept {
+    private String userCode;
+
+    private String deptCode;
+
+    private Integer delFlag;
+
+    private String id;
+
+    private Integer sortNo;
+
+    private Date gmtCreate;
+
+    private String createBy;
+
+    private Date gmtModified;
+
+    private String lastModifiedBy;
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode == null ? null : userCode.trim();
+    }
+
+    public String getDeptCode() {
+        return deptCode;
+    }
+
+    public void setDeptCode(String deptCode) {
+        this.deptCode = deptCode == null ? null : deptCode.trim();
+    }
+
+    public Integer getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(Integer delFlag) {
+        this.delFlag = delFlag;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id == null ? null : id.trim();
+    }
+
+    public Integer getSortNo() {
+        return sortNo;
+    }
+
+    public void setSortNo(Integer sortNo) {
+        this.sortNo = sortNo;
+    }
+
+    public Date getGmtCreate() {
+        return gmtCreate;
+    }
+
+    public void setGmtCreate(Date gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy == null ? null : createBy.trim();
+    }
+
+    public Date getGmtModified() {
+        return gmtModified;
+    }
+
+    public void setGmtModified(Date gmtModified) {
+        this.gmtModified = gmtModified;
+    }
+
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy == null ? null : lastModifiedBy.trim();
+    }
+}

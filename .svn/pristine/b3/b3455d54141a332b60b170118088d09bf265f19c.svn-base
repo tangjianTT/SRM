@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.log.AccessLogMapper">
+	<resultMap type="com.neusoft.srm.model.log.AccessLogDO"
+		id="accessLogRusult" autoMapping="true"></resultMap>
+	<!-- 按条件获取所有登录日志 -->
+	<select id="selectAccessLogByCond" resultMap="accessLogRusult">
+		SELECT ACCESS_CODE,
+		ID,APPID,METHOD,APPLICATION_NAME,CLIENT_IP,CLIENT_PORT,TARGET_IP,INSTANCE_IP,INSTANCE_PORT,
+		READ_TIME,TIMEZONES,PROCESS_TIME,PROTOCOL,HTTP_METHOD,
+		URL,STATUS,RECEIVE_SIZE,SEND_SIZE,REFERRER,USER_AGENT,
+		FEATURE,DEL_FLAG,SORT_NO,GMT_CREATE,CREATE_BY,GMT_MODIFIED,LAST_MODIFIED_BY,USER_NAME,
+		SESSIONID
+		FROM
+		T_SYS_ACCESS_LOG
+		WHERE 1=1
+		<if test="userName != null">
+			AND USER_NAME LIKE CONCAT(#{userName},'%')
+		</if>
+		<if test="gmtCreateFrom != null">
+			AND GMT_CREATE BETWEEN #{gmtCreateFrom} AND
+			#{gmtCreateEnd}
+		</if>
+		LIMIT #{pageCurrentSize},#{pageSize}
+	</select>
+	<!-- 按条件统计登录日志数量 -->
+	<select id="countAccessLogByCond" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM
+		T_SYS_ACCESS_LOG
+		WHERE 1=1
+		<if test="userName != null">
+			AND USER_NAME LIKE CONCAT(#{userName},'%')
+		</if>
+		<if test="gmtCreateFrom != null">
+			AND GMT_CREATE BETWEEN #{gmtCreateFrom} AND
+			#{gmtCreateEnd}
+		</if>
+	</select>
+</mapper>

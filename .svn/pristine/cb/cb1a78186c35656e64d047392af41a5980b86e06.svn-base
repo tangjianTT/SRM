@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.user.UserDeptMapper">
+	<resultMap type="com.neusoft.srm.model.user.UserDept"
+		id="userDept" autoMapping="true"></resultMap>
+	<!-- 新增加的用户信息插入用户部门关联表 -->
+	<insert id="insertUserDept" parameterType="java.lang.String">
+		INSERT INTO
+		   T_SYS_USER_DEPT
+		   (USER_CODE,DEPT_CODE,GMT_CREATE,CREATE_BY,GMT_MODIFIED,LAST_MODIFIED_BY,ID,DEL_FLAG,SORT_NO)
+		VALUES
+		   (#{userCode},#{deptCode},NOW(),#{createBy},NOW(),#{createBy},UUID(),'0','0');
+	</insert>
+	<!-- 修改用户部门关联表 -->
+	<update id="updateUserDept" parameterType="java.lang.String">
+		UPDATE 
+		   T_SYS_USER_DEPT
+		SET 
+		   DEPT_CODE = #{deptCode},
+		   GMT_CREATE = NOW(),
+		   CREATE_BY = #{createBy},
+		   GMT_MODIFIED = NOW(),
+		   LAST_MODIFIED_BY = #{createBy}
+		WHERE 
+		   USER_CODE = #{userCode}
+	</update>
+</mapper>

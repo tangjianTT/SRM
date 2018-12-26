@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.neusoft.srm.mapper.user.UserDeptMapper">
+	<resultMap type="com.neusoft.srm.model.dept.Dept"
+		       id="deptType" autoMapping="true">
+    </resultMap>
+	<!-- 查找部门信息 -->
+	<select id="findListDept" resultMap="deptType">
+		SELECT 
+		   DEPT_CODE,DEPT_NAME,PARENT_DEPT_CODE,
+		   AUTH_CODE,DEPT_TYPE_CODE,REMARK,
+		   DEL_FLAG
+		FROM
+		   T_SYS_DEPT
+	    WHERE DEL_FLAG = '0'
+	</select>
+</mapper>

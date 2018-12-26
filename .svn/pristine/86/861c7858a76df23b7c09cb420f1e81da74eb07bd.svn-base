@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.login.UserMapper">
+	<!-- 根据用户账号查询 -->
+	<select id="findUserByUserAcnt"
+	        resultType="com.neusoft.srm.model.login.UserLoginDO">
+		SELECT
+		  USER_CODE,
+		  USER_ACNT,
+		  USER_NAME,
+		  USER_PWD,
+		  ADMIN_FLAG,
+		  TEL,
+		  PHONE,
+		  EMAIL,
+		  DEPT_CODE,
+		  DEPT_TYPE_CODE,
+		  USER_TYPE_CODE,
+		  LOGIN_ERR_NO,
+		  FREEZE_FLAG,
+		  SUPPLIER_CODE,
+		  SUBACNT_FLAG,
+		  SUPPLIER_FLAG,
+		  JOIN_CAR_FLAG,
+		  CHANGE_PWD_DATE,
+		  LAST_LOGIN_TIME,
+		  SEND_MSG_FLAG,
+		  SEND_EMAIL_FLAG,
+		  REMARK,
+		  DEL_FLAG,
+		  ID,
+		  SORT_NO,
+		  GMT_CREATE,
+		  CREATE_BY,
+	      GMT_MODIFIED,
+		  LAST_MODIFIED_BY
+		FROM
+		  srm.T_SYS_USER
+		WHERE 
+		  USER_ACNT=#{userAcnt}
+	</select>
+
+    <!-- 根据userCode查询具体个人信息，进行更新内容-->
+	<update id="updateUser">
+	   UPDATE srm.T_SYS_USER
+	   SET
+		<if test="userLoginDO.userAcnt != null and userLoginDO.userAcnt != ''">
+			USER_ACNT=#{userLoginDO.userAcnt},
+		</if>
+		<if test="userLoginDO.userName != null and userLoginDO.userName != ''">
+			USER_NAME = #{userLoginDO.userName} ,
+		</if>
+		<if test="userLoginDO.userPwd != null and userLoginDO.userPwd != ''">
+			USER_PWD = #{userLoginDO.userPwd} ,
+		</if>
+		<if test="userLoginDO.adminFlag != null and userLoginDO.adminFlag != ''">
+			ADMIN_FLAG = #{userLoginDO.adminFlag} ,
+		</if>
+		<if test="userLoginDO.tel != null and userLoginDO.tel != ''">
+			TEL = #{userLoginDO.tel} ,
+		</if>
+		<if test="userLoginDO.phone != null and userLoginDO.phone != ''">
+			PHONE = #{userLoginDO.phone} ,
+		</if>
+		<if test="userLoginDO.email != null and userLoginDO.email != ''">
+			EMAIL = #{userLoginDO.email} ,
+		</if>
+		<if test="userLoginDO.deptCode != null and userLoginDO.deptCode != ''">
+			DEPT_CODE = #{userLoginDO.deptCode} ,
+		</if>
+		<if test="userLoginDO.deptTypeCode != null and userLoginDO.deptTypeCode != ''">
+			DEPT_TYPE_CODE = #{userLoginDO.deptTypeCode} ,
+		</if>
+		<if test="userLoginDO.userTypeCode != null and userLoginDO.userTypeCode != ''">
+			USER_TYPE_CODE = #{userLoginDO.userTypeCode} ,
+		</if>
+		<if test="userLoginDO.loginErrNo != null and userLoginDO.loginErrNo != ''">
+			LOGIN_ERR_NO = #{userLoginDO.loginErrNo} ,
+		</if>
+		<if test="userLoginDO.freezeFlag != null and userLoginDO.freezeFlag != ''">
+			FREEZE_FLAG = #{userLoginDO.freezeFlag} ,
+		</if>
+		<if test="userLoginDO.supplierCode != null and userLoginDO.supplierCode != ''">
+			SUPPLIER_CODE = #{userLoginDO.supplierCode} ,
+		</if>
+		<if test="userLoginDO.subacntFlag != null and userLoginDO.subacntFlag != ''">
+			SUBACNT_FLAG = #{userLoginDO.subacntFlag} ,
+		</if>
+		<if test="userLoginDO.supplierFlag != null and userLoginDO.supplierFlag != ''">
+			SUPPLIER_FLAG = #{userLoginDO.supplierFlag} ,
+		</if>
+		<if test="userLoginDO.joinCarFlag != null and userLoginDO.joinCarFlag != ''">
+			JOIN_CAR_FLAG = #{userLoginDO.joinCarFlag} ,
+		</if>
+		<if test="userLoginDO.changePwdDate != null ">
+			CHANGE_PWD_DATE = #{userLoginDO.changePwdDate} ,
+		</if>
+		<if test="userLoginDO.lastLoginTime != null ">
+			LAST_LOGIN_TIME = #{userLoginDO.lastLoginTime} ,
+		</if>
+		<if test="userLoginDO.sendMsgFlag != null and userLoginDO.sendMsgFlag != ''">
+			SEND_MSG_FLAG = #{userLoginDO.sendMsgFlag} ,
+		</if>
+		<if test="userLoginDO.sendEmailFlag != null and userLoginDO.sendEmailFlag != ''">
+			SEND_EMAIL_FLAG = #{userLoginDO.sendEmailFlag} ,
+		</if>
+		<if test="userLoginDO.remark != null and userLoginDO.remark != ''">
+			REMARK = #{userLoginDO.remark} ,
+		</if>
+		<if test="userLoginDO.delFlag != null and userLoginDO.delFlag != ''">
+			DEL_FLAG = #{userLoginDO.delFlag} ,
+		</if>
+		<if test="userLoginDO.id != null and userLoginDO.id != ''">
+			ID = #{userLoginDO.id} ,
+		</if>
+		<if test="userLoginDO.sortNo != null and userLoginDO.sortNo != ''">
+			SORT_NO = #{userLoginDO.sortNo} ,
+		</if>
+		<if test="userLoginDO.gmtCreate != null ">
+			GMT_CREATE = #{userLoginDO.gmtCreate},
+		</if>
+		<if test="userLoginDO.createBy != null and userLoginDO.createBy != ''">
+			CREATE_BY = #{userLoginDO.createBy} ,
+		</if>
+		<if test="userLoginDO.gmtModified != null">
+			GMT_MODIFIED = #{userLoginDO.gmtModified} ,
+		</if>
+		<if test="userLoginDO.lastModifiedBy != null and userLoginDO.lastModifiedBy != ''">
+			LAST_MODIFIED_BY = #{userLoginDO.lastModifiedBy}
+		</if>
+		WHERE
+		  USER_CODE = #{userLoginDO.userCode}
+	</update>
+
+    <!-- 根据usrCode查询用户相关的信息 -->
+	<select id="findUserByUserCode" resultType="java.util.HashMap">
+	   SELECT
+		 USER_ACNT,
+		 USER_NAME,
+		 USER_PWD,
+		 ADMIN_FLAG,
+		 TEL,
+		 PHONE,
+		 EMAIL,
+		 DEPT_CODE,
+		 DEPT_TYPE_CODE,
+		 USER_TYPE_CODE,
+		 LOGIN_ERR_NO,
+		 FREEZE_FLAG,
+		 SUPPLIER_CODE,
+		 SUBACNT_FLAG,
+		 SUPPLIER_FLAG,
+		 JOIN_CAR_FLAG,
+		 CHANGE_PWD_DATE,
+		 LAST_LOGIN_TIME,
+		 SEND_MSG_FLAG,
+		 SEND_EMAIL_FLAG,
+		 REMARK,
+		 DEL_FLAG,
+		 ID,
+		 SORT_NO,
+		 GMT_CREATE,
+		 CREATE_BY,
+		 GMT_MODIFIED,
+		 LAST_MODIFIED_BY
+	   FROM
+		 srm.T_SYS_USER
+	   WHERE 
+	     USER_CODE=#{userCode}
+	</select>
+
+    <!-- 根据usrCode查询用户岗位的信息 -->
+	<select id="findUserPost" resultType="java.util.HashMap">
+	   SELECT
+		 up.POST_CODE,
+		 up.DEFAULT_FLAG,
+		 sp.POST_NAME
+	   FROM
+		 T_SYS_USER_POST up
+	   LEFT JOIN
+		 T_SYS_POST sp ON up.POST_CODE=sp.POST_CODE
+	   AND 
+	     up.DEL_FLAG=0
+	   AND 
+	     sp.DEL_FLAG=0
+	   WHERE 
+	     up.USER_CODE=#{userCode}
+	   AND
+		 sp.POST_NAME IS NOT NULL
+	</select>
+
+    <!-- 根据usrCode查询用户相关部门和个人的信息 -->
+	<select id="findUserMsg" resultType="java.util.HashMap">
+	   SELECT 
+	     su.USER_CODE,
+		 su.USER_ACNT,
+		 su.USER_NAME,
+		 su.USER_PWD,
+		 su.ADMIN_FLAG,
+		 su.TEL,
+		 su.PHONE,
+		 su.EMAIL,
+		 su.DEPT_CODE,
+		 su.DEPT_TYPE_CODE,
+		 su.USER_TYPE_CODE,
+		 su.LOGIN_ERR_NO,
+		 su.FREEZE_FLAG,
+		 su.SUPPLIER_CODE,
+		 su.SUBACNT_FLAG,
+		 su.SUPPLIER_FLAG,
+		 su.JOIN_CAR_FLAG,
+		 su.CHANGE_PWD_DATE,
+		 su.LAST_LOGIN_TIME,
+		 su.SEND_MSG_FLAG,
+		 su.SEND_EMAIL_FLAG,
+		 su.REMARK,
+		 su.DEL_FLAG,
+		 su.ID,
+		 su.SORT_NO,
+		 su.GMT_CREATE,
+		 su.CREATE_BY,
+		 su.GMT_MODIFIED,
+		 su.LAST_MODIFIED_BY,
+		 sd.DEPT_CODE,
+		 sd.DEPT_NAME,
+		 sd.DEPT_NAME_J,
+		 sd.AUTH_CODE,
+		 sd.DEPT_TYPE_CODE,
+		 sd.PARENT_DEPT_CODE,
+		 bt.BIZ_TYPE_CODE
+	   FROM
+		 srm.T_SYS_USER su
+	   LEFT JOIN T_SYS_DEPT sd
+	   ON 
+	     su.DEPT_CODE=sd.DEPT_CODE
+	   AND 
+	     sd.DEL_FLAG=0
+	   LEFT JOIN 
+	     T_SYS_USER_BIZ_TYPE bt  ON su.USER_CODE=bt.USER_CODE
+	   AND bt.DEL_FLAG=0
+	   WHERE 
+	     su.USER_CODE=#{userCode}
+	</select>
+	
+	<!-- 实现获取个人菜单信息 -->
+	<select id="findUserMenus" resultType="java.util.HashMap">
+	   SELECT 
+         sm.MENU_CODE, 
+         sm.MENU_NAME, 
+         sm.MENU_URL, 
+         sm.PARENT_MENU_CODE, 
+         sm.TYPE, 
+         sm.LEVEL, 
+         sm.AUTH_CODE, 
+         sm.REMARK, 
+         sm.LEFT_HIDE_FLAG, 
+         sm.MENU_PIC_URL, 
+         sm.DEL_FLAG, 
+         sm.ID, 
+         sm.SORT_NO, 
+         sm.GMT_CREATE, 
+         sm.CREATE_BY, 
+         sm.GMT_MODIFIED, 
+         sm.LAST_MODIFIED_BY 
+       FROM T_SYS_MENU sm
+       WHERE sm.MENU_CODE  
+       IN
+        (SELECT 
+           rm.MENU_CODE 
+         FROM 
+           T_SYS_ROLE_MENU rm 
+         WHERE 
+           rm.ROLE_CODE 
+         IN (
+           SELECT 
+             pr.ROLE_CODE 
+           FROM 
+             T_SYS_POST_ROLE pr 
+           WHERE  
+             pr.POST_CODE=#{postCode}
+           AND 
+             pr.DEL_FLAG=0 
+             )
+          AND 
+            rm.DEL_FLAG=0
+           ) 
+        AND 
+          sm.DEL_FLAG=0
+       <choose>
+          <when test=" authCode != null and authCode != ''">
+           AND sm.AUTH_CODE LIKE CONCAT(CONCAT('%',#{authCode}),'%')
+          </when>
+          <otherwise>
+           AND sm.PARENT_MENU_CODE='0'
+          </otherwise>
+       </choose>
+	</select>
+	
+	<!-- 实现获取个人菜单按钮信息 -->
+	<select id="findUserButtons" resultType="java.util.HashMap">
+	   SELECT smb.BUTTON_CODE, 
+	     smb.BUTTON_NAME, 
+	     smb.BUTTON_PIC_URL, 
+	     smb.BUTTON_URL, 
+	     smb.BUTTON_STYLE, 
+	     smb.MENU_CODE, 
+	     smb.REMARK, 
+	     smb.DEL_FLAG, 
+	     smb.ID, 
+	     smb.SORT_NO, 
+	     smb.GMT_CREATE, 
+	     smb.CREATE_BY, 
+	     smb.GMT_MODIFIED, 
+	     smb.LAST_MODIFIED_BY 
+	   FROM 
+	     T_SYS_MENU_BUTTON smb 
+	   WHERE 
+	     smb.BUTTON_CODE 
+	   IN 
+	     ( SELECT 
+	         mb.BUTTON_CODE 
+	       FROM 
+	         T_SYS_ROLE_MENU_BUTTON mb 
+	       WHERE  
+	         mb.MENU_CODE=#{menuCode}
+	       AND  
+	         mb.DEL_FLAG=0
+	      ) AND 
+	          smb.DEL_FLAG=0 
+	</select>
+	
+	<!-- 获取部门下的所有员工Code -->
+	<select id="findUserCodeList" resultType="String">
+	SELECT 
+	  USER_CODE  
+	FROM 
+	  T_SYS_USER_DEPT 
+	WHERE 
+	  DEPT_CODE IN 
+	<foreach collection="deptCode" item="deptCode" open="(" close=")" separator=",">
+	  #{deptCode}
+	</foreach>
+	</select>
+</mapper>

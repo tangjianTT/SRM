@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.navigation.WebSiteMapper">
+	<resultMap type="com.neusoft.srm.model.navigation.WebSiteDO"
+		       id="webList"
+		       autoMapping="true">
+		<id property="websiteCode" column="WEBSITE_CODE" />
+		<association property="userLoginDO"
+			         javaType="com.neusoft.srm.model.login.UserLoginDO">
+			<result property="userName" column="USER_NAME" />
+		</association>
+	</resultMap>
+	
+    <!-- WebSite的分页查询（条件查询）  -->
+	<select id="findList" resultMap="webList">
+	   SELECT 
+	     web.WEBSITE_CODE,
+		 web.WEBSITE_NAME,
+		 web.WEBSITE_URL,
+		 web.WEBSITE_PIC_URL,
+		 web.DEL_FLAG,
+		 web.ID,
+		 web.SORT_NO,
+		 web.GMT_CREATE,
+		 web.CREATE_BY,
+		 web.GMT_MODIFIED,
+		 web.LAST_MODIFIED_BY,
+		 u.USER_NAME
+	   FROM
+		 srm.T_CONFIG_WEBSITE web
+	   LEFT JOIN T_SYS_USER u
+	   ON web.CREATE_BY=u.USER_CODE
+	   WHERE
+		<if test="webSiteName != null and webSiteName != ''">
+			web.WEBSITE_NAME LIKE CONCAT(CONCAT('%',#{webSiteName}),'%') and
+		</if>
+		  web.DEL_FLAG=0
+	   ORDER BY  web.GMT_MODIFIED DESC
+	</select>
+
+
+    <!-- 根据传入的webSiteCode进行删除（假删，更改状态值）  -->
+	<update id="remove">
+	   UPDATE srm.T_CONFIG_WEBSITE
+	   SET
+         DEL_FLAG = '1' ,
+		 GMT_MODIFIED=NOW(),
+		 LAST_MODIFIED_BY=#{userCode}
+	   WHERE
+         WEBSITE_CODE in
+		<foreach collection="webSiteCode" item="webSiteCode" open="(" separator="," close=")">
+			#{webSiteCode}
+		</foreach>
+	</update>
+</mapper>

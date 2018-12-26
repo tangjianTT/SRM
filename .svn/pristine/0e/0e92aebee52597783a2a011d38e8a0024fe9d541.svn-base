@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.dept.DeptBizTypeMapper">
+	<!-- 根据部门编码逻辑批量删除部门业务关系表 -->
+	<update id="deleteBizTypeAndDeptByDeptCode"
+		parameterType="java.lang.String">
+		UPDATE 
+				T_SYS_DEPT_BIZ_TYPE
+		SET
+				DEL_FLAG 		 = 	'1',
+				GMT_MODIFIED 	 = 	#{gmtModified},
+				LAST_MODIFIED_BY = 	#{lastModifiedBy}
+		WHERE
+				DEPT_CODE 		 =	#{deptCode}
+	</update>
+	<!-- 关系表增加数据库 -->
+	<insert id="insertBatchBizTypeAndDept">
+		INSERT INTO
+				T_SYS_DEPT_BIZ_TYPE
+					(
+						DEPT_CODE,
+						BIZ_TYPE_CODE,
+						DEL_FLAG,
+						ID,
+						SORT_NO,
+						GMT_CREATE,
+						CREATE_BY,
+						GMT_MODIFIED,
+						LAST_MODIFIED_BY
+					)
+		VALUES
+		<foreach collection="bizTypeAy" index="index" item="item"
+			separator=",">
+					(
+						#{deptBizType.deptCode},
+						#{item},
+						#{deptBizType.delFlag},
+						#{deptBizType.id},
+						#{deptBizType.sortNo},
+						#{deptBizType.gmtCreate},
+						#{deptBizType.createBy},
+						#{deptBizType.gmtModified},
+						#{deptBizType.lastModifiedBy}
+					)
+		</foreach>
+	</insert>
+	<!-- 批量更新数据 -->
+	<update id="updateBatchBizTypeAndDept">
+		UPDATE 
+				T_SYS_DEPT_BIZ_TYPE
+		SET
+				DEL_FLAG = '0'
+		WHERE
+				DEPT_CODE = #{deptCode}
+			AND 
+				BIZ_TYPE_CODE IN (
+		<foreach collection="bizTypeAy" index="index" item="item">
+									#{item}
+		</foreach>
+								 )
+	</update>
+</mapper>

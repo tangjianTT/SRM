@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.neusoft.srm.mapper.role.RoleMenuBtnMapper">
+	<select id="getAllButton" resultType="map">
+	   SELECT 
+	      BUTTON_CODE,BUTTON_NAME,MENU_CODE
+	   FROM 
+	      T_SYS_MENU_BUTTON
+	   WHERE
+	      DEL_FLAG = '0' AND MENU_CODE = #{menuCode}
+	</select>
+	
+	<select id="findMenuButByRoleCode" resultType="com.neusoft.srm.model.menu.MenuButton">
+	   SELECT 
+	      MB.BUTTON_CODE,
+	      MB.BUTTON_NAME,
+	      A.ROLE_CODE,
+	      A.MENU_CODE
+	   FROM
+	      T_SYS_MENU_BUTTON MB
+	   RIGHT JOIN
+	   (SELECT 
+	       RB.ROLE_CODE,
+	       RB.MENU_CODE,
+	       RB.BUTTON_CODE
+	   FROM 
+	      T_SYS_ROLE_MENU_BUTTON RB
+	   WHERE
+	      RB.ROLE_CODE = #{roleCode} 
+	      AND RB.MENU_CODE = #{menuCode} AND RB.DEL_FLAG = '0') A
+	   ON 
+	     MB.BUTTON_CODE = A.BUTTON_CODE AND MB.DEL_FLAG = '0'
+	</select>
+	<!-- 逻辑修改角色菜单信息 -->
+	<update id="updateRoleMenu">
+	   UPDATE
+	      T_SYS_ROLE_MENU
+	   SET
+	      DEL_FLAG = '1',
+	      GMT_MODIFIED = NOW(),
+	      LAST_MODIFIED_BY = #{loginCode}
+	   WHERE
+	      ROLE_C0DE = #{roleCode}
+	</update>
+	<insert id="insertRoleMenu">
+	   INSERT INTO
+	      T_SYS_ROLE_MENU
+	      (ROLE_CODE,
+	       MENU_CODE,
+	       DEL_FLAG,
+	       ID,
+	       SORT_NO,
+	       GMT_CREATE,
+	       CREATE_BY,
+	       GMT_MODIFIED,
+	       LAST_MODIFIED_BY
+	      )
+	   VALUES
+	      <foreach collection="menuList" item="menuCode" separator=",">
+	      (#{roleCode},#{menuCode},'0',UUID(),'0',NOW(),#{loginCode},NOW(),#{loginCode})
+	      </foreach>
+	</insert>
+	<!-- 逻辑修改角色菜单按钮 -->
+	<update id="updateRoleMenuButton">
+	   UPDATE
+	     T_SYS_ROLE_MENU_BUTTON
+	   SET
+	      DEL_FALG = '1',
+	      GMT_MODIFIED = NOW(),
+	      LAST_MODIFIED_BY = #{loginCode}
+       WHERE 
+          MENU_CODE IN
+          <foreach collection="menuCode" item="menuCode" separator=",">
+          #{menuCode}
+          </foreach>
+       AND ROLE_CODE = #{roleCode}
+	</update>
+	<!-- 菜单授权插入按钮 -->
+	<insert id="insertRoleMenuButton">
+	   INSERT INTO
+	      T_SYS_ROLE_MENU_BUTTON
+	      (ROLE_CODE,
+	       MENU_CODE,
+	       BUTTON_CODE,
+	       DEL_FLAG,
+	       ID,
+	       SORT_NO,
+	       GMT_CREATE,
+	       CREATE_BY,
+	       GMT_MODIFIED,
+	       LAST_MODIFIED_BY
+	      )
+	   VALUES
+	      <foreach collection="menuButton" item="menuButton" separator=",">
+	      (#{roleCode},#{menuButton.menuCode},#{menuButton.buttonCode},'0','0',NOW(),#{loginCode},NOW(),#{loginCode})
+	      </foreach>
+	</insert>
+	</mapper>

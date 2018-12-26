@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>首页</title>
+<link rel="stylesheet" href="css/reset.css" />
+<link rel="stylesheet" href="css/index.css" />
+<link rel="stylesheet" href="css/lrtk.css" media="all">
+<script type="text/javascript" src="js/fordboy.js"></script>
+<link href="css/css.css" rel="stylesheet" type="text/css" />
+<script src="js/jquery-1.11.1.min.js" type="text/javascript" ></script>
+<link rel="stylesheet" href="css/indextext.css" />
+<script src="js/indextext.js" type="text/javascript"> </script>
+<link rel="stylesheet" href="css/footericon.css"/>
+</head>
+
+<body>
+
+  <!--导航-->
+  <div id="header">
+    <div class="width">
+      <div class=" fl logo"><a href="index.html"><img src="images/index/nav_logo.png" width="203" height="68" alt="logo"/></a></div>
+      <div id="nav" class="fr">
+        <h1><a href="login.html">登录</a><a href="signup.html">注册</a><span><img src="images/index/tel_icon.png" width="16" height="12" alt="tel_icon" />400-000-0000</span></h1>
+        <ul>
+          <li><a href="#"><span>首页</span></a></li>
+          <li><a href="page01.html">目的地</a></li>
+          <li><a href="page02.html">酒店</a></li>
+          <li><a href="page03.html">景点</a></li>
+          <li><a href="page04.html">旅游攻略</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!--banner-->
+  <div id="solid">
+      <div class="solid0"></div><div class="solid1"></div><div class="solid2"></div>
+      <ul>
+          <li><a href="#"><img src="images/index/banner.png" width="1920" height="530" alt="banner01" /></a></li>
+          <li><a href="#"><img src="images/index/banner02.png" width="1920" height="530" alt="banner02" /></a></li>
+          <li><a href="#"><img src="images/index/banner03.png" width="1920" height="530" alt="banner03" /></a></li>
+      </ul>
+      <div id="btt"><span></span><span></span><span></span></div>
+  </div>
+  <script src="js/fordboy.js"></script>  
+  <!--content-->
+<div id="container">
+<div id="wrap-container" class="clearfix">
+        <div class="examples_body">
+        <h2 id="rementuijian">热门推荐<a href="#">&lt;更多</a></h2>
+        <div id="hx"><img src="images/index/index-hx.png" width="1180" height="7" /></div>
+        <p>Recommended</p>
+        
+	    <ul class="bannerHolder" >
+        
+            <li>
+            <div class="banner">
+                <a href="page05.html" target="_blank">
+                    <img alt="The Best Designs" src="images/index/rm_meiguo.png" height="355" width="295" />
+                </a>
+                <p class="companyInfo"><span>美国深度10-12日游</span><br /><br />部分团期南京直飞<br />环影迪斯尼海洋世界<br />名校观光<br />奥莱血拼<br />美食味在美西</p>
+                <div class="cornerTL"></div>
+                <div class="cornerTR"></div>
+                <div class="cornerBL"></div>
+                <div class="cornerBR"></div>
+            </div>
+            </li>
+            <li>
+            <div class="banner">
+                <a href="#" target="_blank">
+                    <img  height="355" width="295" alt="Mail Chimp" src="images/index/rm_maerdaifu.png"/>
+                </a>
+                <p class="companyInfo"><span>双鱼岛5晚7日自助游</span><br /><br />南京出发<br />明快典雅装饰<br />浮潜环境优<br />第一晚马累<br />水上飞到</p>
+                <div class="cornerTL"></div>
+                <div class="cornerTR"></div>
+                <div class="cornerBL"></div>
+                <div class="cornerBR"></div>
+            </div>
+            </li>
+            <li>
+            <div class="banner">
+                <a href="#" target="_blank">
+                    <img  height="355" width="295" alt="Mail Chimp" src="images/index/rm_aiqinghai.png" />
+                </a>
+                <p class="companyInfo"><span>希腊爱琴海8晚10日游</span><br /><br />沐浴爱琴海<br />餐食全面升级<br />雅典集散<br />伊亚落日<br />全称五星级酒店</p>
+                <div class="cornerTL"></div>
+                <div class="cornerTR"></div>
+                <div class="cornerBL"></div>
+                <div class="cornerBR"></div>
+            </div>
+            </li>
+            <li>
+            <div class="banner">
+                <a href="#" target="_blank">
+                    <img  height="355" width="295" alt="Mail Chimp" src="images/index/rm_mangu.png" />
+                </a>
+                <p class="companyInfo"><span>泰国曼谷7晚8日游</span><br /><br />十佳产品<br />芭提雅海边酒店<br />普吉岛3晚连住<br />美食之旅<br />升级快艇出海</p>
+                <div class="cornerTL"></div>
+                <div class="cornerTR"></div>
+                <div class="cornerBL"></div>
+                <div class="cornerBR"></div>
+            </div>
+            </li>
+        </ul>
+        <!-- Examples body -->
+        </div>
+        <div id="down_bg">
+        <div class="examples_body">
+	    <h2 id="chanpin_bx">产品大促<a href="#">&lt;更多</a></h2>
+        <div id="hx"><img src="images/index/index-hx.png" width="1180" height="7" /></div>
+        <p>Sales promotion</p>
+        <div class="chanpin">
+        <ul class="clearfixx">
+          <li>
+			<div class="photo"><img src="images/index/cp_faruiyi.png" width="295" height="200" alt="瑞士" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>法瑞意13-14日游</h3><div>全程WiFi&nbsp;拒签无损&nbsp;一价全含</div></a></div>
+		</li>
+		<li>
+			<div class="photo"><img src="images/index/cp_aodaliya.png" height="200" width="295" alt="澳大利亚" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>澳大利亚9日游</h3><div>指定团期可全国联运</div></a></div>
+		</li>
+		<li>
+			<div class="photo"><img src="images/index/cp_xinjiapo.png" width="295" height="200" alt="新加坡" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>新加坡5日半自助游</h3><div>圣淘沙入岛费和往返接送</div></a></div>
+		</li>
+		<li>
+			<div class="photo"><img src="images/index/cp_tuerqi.png" width="295" height="200" alt="土耳其" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>土耳其12日游</h3><div>伊斯坦布尔升级国际五星</div></a></div>
+		</li>		
+        </ul>
+        </div>
+
+        <!-- Examples body -->
+        </div>
+        <div class="examples_body">
+        
+	    <h2 id="dangji_bx">当季精选<a href="#">&lt;更多</a></h2>
+        <div id="hx"><img src="images/index/index-hx.png" width="1180" height="7" /></div>
+        <p>Season</p>
+        <div class="chanpin">
+        <ul class="clearfixx">
+          <li>
+			<div class="photo"><img src="images/index/dj_huahai.png" width="295" height="200" alt="花海" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>法国深度10-12日游</h3><div>5月烂漫花海&nbsp;放逐百花盛开</div></a></div>
+		</li>
+		<li>
+			<div class="photo"><img src="images/index/dj_baojiali.png" height="200" width="295" alt="保加利亚" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>东欧巴尔干24日游</h3><div>大巴尔干全景十一国</div></a></div>
+		</li>
+		<li>
+			<div class="photo"><img src="images/index/dj_feiji.png" width="295" height="200" alt="斐济" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>斐济8日半自助游</h3><div>私人订制&nbsp;含三个经典当地游</div></a></div>
+		</li>
+		<li>
+			<div class="photo"><img src="images/index/dj_sumei.png" width="295" height="200" alt="苏梅岛" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>曼谷-苏梅机票+当地6或7日游</h3><div>浪漫苏梅 &nbsp;天使之城&nbsp; 蜜月纯玩</div></a></div>
+		</li>		
+        </ul>
+        </div>
+
+        <!-- Examples body -->
+        </div>
+        <div class="examples_body">
+	    <h2 id="zhuti_bx">主题旅游<a href="#">&lt;更多</a></h2>
+        <div id="hx"><img src="images/index/index-hx.png" width="1180" height="7" /></div>
+        <p>Themes</p>
+        <div class="chanpin">
+        <ul class="clearfixx">
+          <li>
+			<div class="photo"><img src="images/index/zt_beiou.png" width="295" height="200" alt="北欧" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>北欧四国11日游</h3><div>五星级邮轮以及北欧式自助大餐</div></a></div>
+		</li>
+		<li>
+			<div class="photo"><img src="images/index/zt_feizhou.png" height="200" width="295" alt="非洲" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>南非7晚9日游</h3><div>彩虹之国南非&nbsp;国航直飞全国可联运</div></a></div>
+		</li>
+		<li>
+			<div class="photo"><img src="images/index/zt_balidao.png" width="295" height="200" alt="巴厘岛" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>巴厘岛5日或6日游</h3><div>自营精致小包团&nbsp;蓝梦岛出海</div></a></div>
+		</li>
+		<li>
+			<div class="photo"><img src="images/index/zt_lijiang.png" width="295" height="200" alt="云南" /></div>
+			<div class="rsp"></div>
+			<div class="text"><a href="#"><h3>丽江-大理洱海双飞5日游</h3><div>大理2日深度游&nbsp;洱海骑行漫步花海</div></a></div>
+		</li>		
+        </ul>
+        </div>
+
+        <!-- Examples body -->
+        </div>
+        </div>
+</div>
+<!-- /COPYRIGHT -->
+</div>
+
+
+    <!--content_bottom-->
+  <!--footer-->
+  <div id="footer">
+    <div id="footer_bg">
+      <div class="width" id="icon">
+        <ul>
+          <li id="rm_icon"><a href="#rementuijian"><img src="images/index/rm_icon.png" width="168" height="168" alt="热门图标" /></a></li>
+          <li id="cp_icon"><a href="#chanpin_bx"><img src="images/index/cp_icon.png" width="168" height="168" alt="产品图标" /></a></li>
+          <li id="dj_icon"><a href="#dangji_bx"><img src="images/index/dj_icon.png" width="168" height="168" alt="当季图标" /></a></li>
+          <li id="zt_icon"><a href="#zhuti_bx"><img src="images/index/zt_icon.png" width="168" height="168" alt="主题图标" /></a></li>
+        </ul>
+        <h3 class="rj"><a href="#">热门推荐</a></h3>
+        <h3 class="rj"><a href="#">产品大促</a></h3>
+        <h3 class="rj"><a href="#">当季精选</a></h3>
+        <h3><a href="#">主题旅行</a></h3>
+      </div>
+    </div>
+    
+  <div id="footer_bg02">
+    <div id="footer_bg02_01" class="width">
+      <ul>
+        <li><a href="#"><span>首页</span></a></li>
+        <li><a href="page01.html"><span>目的地</span></a></li>
+        <li><a href="page02.html"><span>酒店</span></a></li>
+        <li><a href="page03.html"><span>景点</span></a></li>
+        <li><a href="page04.html"><span>旅游攻略</span></a></li></ul>
+        </div>
+      <div id="footer_bg02_02" class="width">
+        <div class="footer_icon">
+          <ul>
+          <li class="fl"><a href="#"><img src="images/index/footer_icon01.png" width="45" height="45" alt="电话" /></a></li>
+          <li class="fl"><a href="mailto:1015718954@163.com"><img src="images/index/footer_icon02.png" width="45" height="45" alt="邮箱" /></a></li>
+          <li><a href="#"><img src="images/index/footer_icon03.png" width="45" height="45" alt="电话" /></a></li>
+          </ul>      
+        </div>
+        <div class="footer_icon02">
+          <ul>
+          <li class="fl">400-000-0000</li>
+          <li class="fl">1015718954@qq.com</li>
+          <li class="fl mr">旅行鸟官方微博</li>
+          </ul>      
+        </div>
+      </div>
+    <div class="footer_bq"><p>ICP备案许可证：江ICP备123456789号 Copyright © 2016-2017 旅行鸟网 版权所有 </p>
+    </div>
+    </div>
+  </div>
+  </div>
+  
+  <!--yun-->
+  <div class="center">
+  <div id="yun"><img src="images/index/yun.png" width="1920" height="785" /></div>
+  </div>
+ <script>
+  <!--remen.js-->
+$(document).ready(function(){
+
+	// 0.4代表遮罩的透明度
+	$('.banner div').css('opacity',0.4);
+
+	$('.banner').hover(function(){
+	
+		var el = $(this);
+		
+		// 先淡出阴影，后淡入文字
+		el.find('div').stop().animate({width:590,height:710},'slow',function(){
+
+			el.find('p').fadeIn('fast');
+		});
+
+	},function(){
+
+		var el = $(this);
+		
+		// 隐藏文字
+		el.find('p').stop(true,true).hide();
+		
+		// 去掉遮罩
+		el.find('div').stop().animate({width:60,height:60},'fast');
+
+	}).click(function(){
+		
+		// 点击图片时打开链接
+		
+		window.open($(this).find('a').attr('href'));
+		
+	});
+});
+</script>
+
+</body>
+</html>

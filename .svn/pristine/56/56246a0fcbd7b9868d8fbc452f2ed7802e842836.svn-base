@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.navigation.NavigationMapper">
+	<!-- AppSite的修改 -->
+	<update id="updateAppSite">
+	   UPDATE srm.T_CONFIG_APPSITE
+	   SET
+		 APPSITE_NAME = #{appSiteDO.appsiteName} ,
+		 APPSITE_PIC_URL = #{appSiteDO.appsitePicUrl} ,
+		 GMT_MODIFIED = NOW() ,
+		 LAST_MODIFIED_BY = #{appSiteDO.lastModifiedBy}
+       WHERE
+		 APPSITE_CODE = #{appSiteDO.appsiteCode} ;
+	</update>
+
+    <!-- WebSite的修改 -->
+	<update id="updateWebSite">
+	   UPDATE srm.T_CONFIG_WEBSITE
+	   SET
+		 WEBSITE_NAME = #{webSiteDO.websiteName} ,
+		 WEBSITE_URL = #{webSiteDO.websiteUrl} ,
+		 WEBSITE_PIC_URL = #{webSiteDO.websitePicUrl} ,
+		 GMT_MODIFIED = NOW() ,
+		 LAST_MODIFIED_BY = #{webSiteDO.lastModifiedBy}
+	   WHERE
+		 WEBSITE_CODE = #{webSiteDO.websiteCode} ;
+	</update>
+
+    <!-- AppSite的新增 -->
+	<insert id="insertAppSite">
+	   INSERT INTO srm.T_CONFIG_APPSITE
+	     (APPSITE_CODE,
+		  APPSITE_NAME,
+		  APPSITE_PIC_URL,
+		  DEL_FLAG,
+		  ID,
+		  GMT_CREATE,
+		  CREATE_BY,
+		  GMT_MODIFIED,
+		  LAST_MODIFIED_BY
+	      )
+	   VALUES
+		 (#{appSiteDO.appsiteCode},
+		 #{appSiteDO.appsiteName},
+		 #{appSiteDO.appsitePicUrl},
+		 '0',
+	     UUID(),
+		 NOW(),
+		 #{appSiteDO.createBy},
+		 NOW(),
+		 #{appSiteDO.lastModifiedBy}
+		 );
+	</insert>
+  
+    <!-- WebSite的新增 -->
+	<insert id="insertWebSite">
+	   INSERT INTO srm.T_CONFIG_WEBSITE
+		 (WEBSITE_CODE,
+		  WEBSITE_NAME,
+		  WEBSITE_URL,
+		  WEBSITE_PIC_URL,
+		  DEL_FLAG,
+		  ID,
+		  GMT_CREATE,
+		  CREATE_BY,
+		  GMT_MODIFIED,
+		  LAST_MODIFIED_BY
+		  )
+	   VALUES
+		 (#{webSiteDO.websiteCode},
+		  #{webSiteDO.websiteName},
+		  #{webSiteDO.websiteUrl},
+		  #{webSiteDO.websitePicUrl},
+		  '0',
+		  UUID(),
+		  NOW(),
+		  #{webSiteDO.createBy},
+		  NOW(),
+		  #{webSiteDO.lastModifiedBy}
+		  );
+	</insert>
+</mapper>

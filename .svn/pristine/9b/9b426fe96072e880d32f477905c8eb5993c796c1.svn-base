@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.notice.NoticeMapper">
+	<!-- Notice的分页查询（条件查询） -->
+	<select id="findList" resultType="java.util.HashMap">
+	   SELECT   
+	     ie.NOTICE_CODE, 
+	     ie.NOTICE_TITLE, 
+	     ie.NOTICE_KEYWORD, 
+	     ie.NOTICE_CONTENT, 
+	     ie.BIZ_TYPE_CODE, 
+	     ie.USER_CODE, 
+	     ie.POST_CODE, 
+	     ie.DEPT_CODE, 
+	     ie.AUTH_CODE, 
+    	 ie.AUTH_DEPT_TYPE_CODE, 
+	     ie.TOP_FLAG, 
+     	 ie.VALID_DATE_START, 
+ 	     ie.VALID_DATE_END, 
+	     ie.PRISON_TYPE, 
+	     ie.DEL_FLAG, 
+	     ie.ID, 
+	     ie.SORT_NO, 
+	     ie.GMT_CREATE, 
+	     ie.CREATE_BY, 
+	     ie.GMT_MODIFIED, 
+     	 ie.LAST_MODIFIED_BY ,
+	     ne.NOTICE_FILE_CODE, 
+	     ne.NOTICE_FILE_NAME, 
+	     ne.NOTICE_FILE_URL
+	 FROM 
+	   T_INTERACT_NOTICE ie 
+	 LEFT JOIN 
+	   T_INTERACT_NOTICE_FILE ne ON  ie.NOTICE_CODE=ne.NOTICE_CODE 
+	 AND 
+	   ne.DEL_FLAG=0  
+	 WHERE 
+	   ie.USER_CODE=#{userCode}
+     <if test=" noticeTitle != null and noticeTitle != ''">
+     AND   ie.NOTICE_TITLE LIKE CONCAT(CONCAT('%',#{noticeTitle}),'%')  
+     </if>
+     <if test=" noticeKeyword != null and noticeKeyword != ''">
+     AND   ie.NOTICE_KEYWORD LIKE CONCAT(CONCAT('%',#{noticeKeyword}),'%')  
+     </if>
+     <if test=" gmtCreateStart != null and gmtCreateStart != '' or gmtCreateEnd != null and gmtCreateEnd != ''">
+     AND    ie.GMT_CREATE between TO_DATE(#{gmtCreateStart},'yyyy-MM-dd hh:mm:ss') AND TO_DATE(#{gmtCreateEnd},'yyyy-MM-dd hh:mm:ss')
+     </if>
+	 AND 
+	   ie.DEL_FLAG=0
+	 ORDER BY ie.TOP_FLAG DESC , ie.GMT_MODIFIED DESC
+	</select>
+	
+    <!-- 根据传入的noticeCode进行删除Notice信息（假删，更改状态值） --> 
+	<update id="removeNotice">
+	   UPDATE srm.T_INTERACT_NOTICE 
+	   SET
+	     DEL_FLAG = 1 , 
+	     GMT_MODIFIED = NOW() , 
+	     LAST_MODIFIED_BY = #{userCode}
+	   WHERE  NOTICE_CODE IN
+	   <foreach collection="noticeCode" item="noticeCode" open="(" separator="," close=")">
+			#{noticeCode}
+		</foreach>   
+	</update>
+	
+    <!-- 根据传入的noticeCode进行删除NoticeFile信息（假删，更改状态值） --> 
+	<update id="removeNoticeFile">
+	   UPDATE srm.T_INTERACT_NOTICE_FILE 
+	   SET
+	     DEL_FLAG = '1' , 
+	     GMT_MODIFIED = NOW() , 
+	     LAST_MODIFIED_BY = #{userCode}
+	   WHERE
+         NOTICE_CODE  IN
+       <foreach collection="noticeCode" item="noticeCode" open="(" separator="," close=")">
+			#{noticeCode}
+	   </foreach>  
+	</update>
+	
+	<!-- 根据noticeFileCode进行删除NoticeFile信息（假删，更改状态值） --> 
+	<update id="removeNoticeFileByNoticeFileCode">
+	   UPDATE srm.T_INTERACT_NOTICE_FILE 
+	   SET
+	     DEL_FLAG = '1' , 
+	     GMT_MODIFIED = NOW() , 
+	     LAST_MODIFIED_BY = #{userCode}
+	   WHERE
+         NOTICE_FILE_CODE = #{noticeFileCode}
+	</update>
+	
+	<!-- 新增一条Notice信息 -->
+	<insert id="insertNotice">
+	  INSERT INTO   srm.T_INTERACT_NOTICE 
+        (NOTICE_CODE,  
+         NOTICE_TITLE, 
+         NOTICE_KEYWORD, 
+	     NOTICE_CONTENT, 
+	     BIZ_TYPE_CODE, 
+	     USER_CODE, 
+	     POST_CODE, 
+	     DEPT_CODE, 
+	     AUTH_CODE, 
+	     AUTH_DEPT_TYPE_CODE, 
+	     TOP_FLAG, 
+	     VALID_DATE_START, 
+         VALID_DATE_END, 
+	     PRISON_TYPE, 
+	     DEL_FLAG, 
+         ID, 
+         SORT_NO, 
+	     GMT_CREATE, 
+	     CREATE_BY, 
+	     GMT_MODIFIED, 
+	     LAST_MODIFIED_BY
+	     )
+       VALUES
+	     (#{noticeDO.noticeCode}, 
+	      #{noticeDO.noticeTitle}, 
+	      #{noticeDO.noticeKeyword}, 
+	      #{noticeDO.noticeContent}, 
+	      #{noticeDO.bizTypeCode}, 
+	      #{noticeDO.userCode}, 
+	      #{noticeDO.postCode}, 
+	      #{noticeDO.deptCode}, 
+	      #{noticeDO.authCode}, 
+	      #{noticeDO.authDeptTypeCode}, 
+	      '0', 
+	      #{noticeDO.validDateStart}, 
+	      #{noticeDO.validDateEnd}, 
+	      #{noticeDO.prisonType}, 
+	      '0', 
+	      UUID(), 
+          #{noticeDO.sortNo}, 
+	      NOW(), 
+	      #{noticeDO.userCode}, 
+	      NOW(),
+	      #{noticeDO.userCode}
+	      );  
+	</insert>
+	
+	<!-- 新增NoticeFile一条或多条数据 -->
+	<insert id="insertNoticeFile">
+	   INSERT INTO srm.T_INTERACT_NOTICE_FILE 
+	     (NOTICE_FILE_CODE, 
+	      NOTICE_FILE_NAME, 
+	      NOTICE_FILE_URL, 
+	      NOTICE_CODE, 
+	      DEL_FLAG, 
+	      ID, 
+	      SORT_NO, 
+	      GMT_CREATE, 
+	      CREATE_BY, 
+	      GMT_MODIFIED, 
+	      LAST_MODIFIED_BY
+	      )
+	    VALUES
+	    <foreach collection ="noticeFileList" item="noticeFile" separator =",">   
+	      ( #{noticeFile.noticeFileCode}, 
+	        #{noticeFile.noticeFileName}, 
+	        #{noticeFile.noticeFileUrl}, 
+	        #{noticeFile.noticeCode}, 
+	        '0', 
+	        UUID(), 
+	        #{noticeFile.sortNo}, 
+	        NOW(), 
+            #{noticeFile.createBy}, 
+	        NOW(), 
+	        #{noticeFile.createBy}
+	       )
+        </foreach >
+	</insert>
+	
+	<!-- Notice的信息修改 -->
+	<update id="updateNotice">
+	   UPDATE srm.T_INTERACT_NOTICE 
+	   SET
+        <if test=" noticeDO.noticeTitle != null and noticeDO.noticeTitle != ''">
+	     NOTICE_TITLE = #{noticeDO.noticeTitle} , 
+	    </if>
+  	    <if test=" noticeDO.noticeKeyword != null and noticeDO.noticeKeyword != ''">
+	     NOTICE_KEYWORD = #{noticeDO.noticeKeyword} , 
+	    </if>
+	    <if test=" noticeDO.noticeContent != null and noticeDO.noticeContent != ''">
+	     NOTICE_CONTENT = #{noticeDO.noticeContent} , 
+	    </if>
+	    <if test=" noticeDO.bizTypeCode != null and noticeDO.bizTypeCode != ''">
+	     BIZ_TYPE_CODE = #{noticeDO.bizTypeCode} , 
+	    </if>
+	    <if test=" noticeDO.topFlag != null and noticeDO.topFlag != ''">
+	     TOP_FLAG = #{noticeDO.topFlag} , 
+	    </if>
+	    <if test=" noticeDO.validDateStart != null and noticeDO.validDateStart != ''">
+	     VALID_DATE_START = #{noticeDO.validDateStart} , 
+	    </if>
+	    <if test=" noticeDO.validDateEnd != null and noticeDO.validDateEnd != ''">
+	     VALID_DATE_END = #{noticeDO.validDateEnd} , 
+	    </if>
+	    <if test=" noticeDO.prisonType != null and noticeDO.prisonType != ''">
+	     PRISON_TYPE = #{noticeDO.prisonType} , 
+	    </if>
+	    <if test=" noticeDO.delFlag != null and noticeDO.delFlag != ''">
+	     DEL_FLAG = #{noticeDO.delFlag} , 
+	    </if>
+	    <if test=" noticeDO.id != null and noticeDO.id != ''">
+	     ID = #{noticeDO.id} , 
+	    </if>
+	    <if test=" noticeDO.sortNo != null and noticeDO.sortNo != ''">
+	     SORT_NO = #{noticeDO.sortNo} , 
+	    </if>
+	    <if test=" noticeDO.gmtCreate != null and noticeDO.gmtCreate != ''">
+	     GMT_CREATE = #{noticeDO.gmtCreate} , 
+	    </if>
+	    <if test=" noticeDO.createBy != null and noticeDO.createBy != ''">
+	     CREATE_BY = #{noticeDO.createBy} , 
+	    </if>
+	     GMT_MODIFIED = NOW() , 
+	    <if test=" noticeDO.lastModifiedBy != null and noticeDO.lastModifiedBy != ''">
+	     LAST_MODIFIED_BY = #{noticeDO.lastModifiedBy}
+	    </if>
+	   WHERE
+	     NOTICE_CODE = #{noticeDO.noticeCode} ;
+	</update>
+	
+    <!-- 统计发布公告的置顶数目 -->
+	<select id="countByTopFlag">
+	   SELECT COUNT(*) FROM T_INTERACT_NOTICE WHERE USER_CODE=#{userCode} AND TOP_FLAG=1    
+	</select>
+	
+	<!-- 更新置顶/取消置顶 -->
+    <update id="updateNoticeTopFlag">
+       UPDATE srm.T_INTERACT_NOTICE 
+	   SET
+	   <if test="topFlag == '0' ">
+	     TOP_FLAG = '1' , 
+	   </if>
+	    <if test="topFlag == '1' ">
+	     TOP_FLAG = '0' , 
+	   </if>
+	     GMT_MODIFIED = NOW() , 
+	     LAST_MODIFIED_BY = #{userCode}
+	   WHERE
+	     NOTICE_CODE = #{noticeCode} ;
+    </update>
+</mapper>

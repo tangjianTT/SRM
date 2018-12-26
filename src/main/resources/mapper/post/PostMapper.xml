@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.post.PostMapper" >
+  <select id="findAllPost" resultType="com.neusoft.srm.model.post.Post">
+     SELECT 
+        POST_CODE,
+        POST_NAME,
+        POST_NAME_J,
+        DEL_FLAG,
+        ID,
+        SORT_NO,
+        GMT_CREATE,
+        CREATE_BY,
+        GMT_MODIFIED,
+        LAST_MODIFIED_BY
+     FROM
+        T_SYS_POST
+     WHERE 1=1 AND DEL_FLAG = 0
+     <if test="postName != null and postName != ''">
+        AND POST_NAME LIKE CONCAT(CONCAT('%',#{postName}),'%')
+     </if>
+     ORDER BY GMT_MODIFIED DESC
+  </select>
+   <insert id="insertPost" parameterType="com.neusoft.srm.model.post.Post">
+	INSERT INTO
+	   T_SYS_POST
+	    (POST_CODE,
+		 POST_NAME,
+		 POST_NAME_J,
+		 DEL_FLAG,
+		 ID,
+		 SORT_NO,
+		 GMT_CREATE,
+		 CREATE_BY,
+		 GMT_MODIFIED,
+		 LAST_MODIFIED_BY
+		)
+	VALUES
+		(#{posts.postCode},
+		 #{posts.postName},
+		 #{posts.postNameJ},
+		 '0',
+		 UUID(),
+		 '0',
+		 NOW(),
+		 #{posts.createBy},
+		 NOW(),
+		 #{posts.createBy}
+	    )
+   </insert>
+   <update id="updatePost" parameterType="com.neusoft.srm.model.post.Post">
+      UPDATE 
+         T_SYS_POST
+      SET
+         POST_NAME = #{posts.postName},
+         POST_NAME_J = #{posts.postNameJ},
+         GMT_MODIFIED = NOW(),
+         LAST_MODIFIED_BY = #{posts.createBy}
+      WHERE
+         POST_CODE = #{posts.postCode}
+   </update>
+</mapper>

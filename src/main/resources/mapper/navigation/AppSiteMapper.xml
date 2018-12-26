@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.navigation.AppSiteMapper">
+	<resultMap type="com.neusoft.srm.model.navigation.AppSiteDO"
+		       id="appList" autoMapping="true">
+		<id property="appsiteCode" column="APPSITE_CODE" />
+		<association property="userLoginDO"
+			         javaType="com.neusoft.srm.model.login.UserLoginDO">
+			<result property="userName" column="USER_NAME" />
+		</association>
+	</resultMap>
+
+    <!-- AppSite的分页查询（条件查询） -->
+	<select id="findList" resultMap="appList">
+	   SELECT app.APPSITE_CODE,
+		 app.APPSITE_NAME,
+		 app.APPSITE_PIC_URL,
+		 app.DEL_FLAG,
+		 app.ID,
+		 app.SORT_NO,
+		 app.GMT_CREATE,
+		 app.CREATE_BY,
+		 app.GMT_MODIFIED,
+		 app.LAST_MODIFIED_BY,
+		 u.USER_NAME
+	   FROM
+		 srm.T_CONFIG_APPSITE app
+	   LEFT JOIN T_SYS_USER u
+	   ON 
+	     app.CREATE_BY=u.USER_CODE
+	   WHERE
+	   <if test="appSiteName != null and appSiteName != ''">
+			app.APPSITE_NAME LIKE CONCAT(CONCAT('%',#{appSiteName}),'%') AND
+	   </if>
+		 app.DEL_FLAG=0
+	   ORDER BY app.GMT_MODIFIED DESC
+	</select>
+
+    <!-- 根据传入的appSiteCode进行删除（假删，更改状态值） -->
+	<update id="remove">
+		UPDATE srm.T_CONFIG_APPSITE
+		SET
+          DEL_FLAG = '1' ,
+		  GMT_MODIFIED=NOW(),
+		  LAST_MODIFIED_BY=#{userCode}
+		WHERE
+          APPSITE_CODE in
+		<foreach collection="appSiteCode" item="appSiteCode" open="("
+			     separator="," close=")">
+			#{appSiteCode}
+		</foreach>
+	</update>
+</mapper>

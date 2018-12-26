@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.dict.DictMainDOMapper">
+	<resultMap type="com.neusoft.srm.model.dict.DictMainDO"
+		id="dictMainResult" autoMapping="true"></resultMap>
+	<!-- 按条件查询所有的主字典数据 -->
+	<select id="findAllMainDictByCond" resultMap="dictMainResult">
+		SELECT 
+				DICT_MAIN_CODE,
+				ID,
+				LABLE_KEY,
+				LABLE_NAME,
+				SORT_NO,
+				GMT_CREATE,
+				CREATE_BY,
+				GMT_MODIFIED,
+				LAST_MODIFIED_BY,
+				DEL_FLAG,
+				REMARK
+		FROM
+			T_SYS_DICT_MAIN
+		WHERE
+				1=1
+		AND
+				DEL_FLAG = '0'
+		 <if test="lableKey != null and lableKey != '' ">
+		 	AND
+		 		LABLE_KEY LIKE CONCAT(CONCAT('%',#{lableKey}),'%')
+		 </if>
+		 <if test="lableName != null and lableName != '' ">
+		 	AND
+		 		LABLE_NAME LIKE CONCAT(CONCAT('%',#{lableName}),'%')
+		 </if>
+		ORDER BY 
+				GMT_MODIFIED ASC
+	</select>
+	<!-- 通过主编码查询一条主字典数据 -->
+	<select id="findOneMainDiceByDictMainCode"
+	resultMap="dictMainResult">
+		SELECT
+				DICT_MAIN_CODE, 
+				ID, 
+				LABLE_KEY, 
+				LABLE_NAME, 
+				SORT_NO, 
+				GMT_CREATE, 
+				CREATE_BY, 
+				GMT_MODIFIED, 
+				LAST_MODIFIED_BY, 
+				DEL_FLAG, 
+				REMARK
+		FROM 
+			T_SYS_DICT_MAIN 
+		WHERE
+				DICT_MAIN_CODE = #{dictMainCode}
+			AND
+				DEL_FLAG 	   = '0'
+	</select>
+	<!-- 插入主字典数据 -->
+	<insert id="insertDictMain">	
+		INSERT INTO 
+			T_SYS_DICT_MAIN 
+				(
+					DICT_MAIN_CODE, 
+					ID, 
+					LABLE_KEY, 
+					LABLE_NAME, 
+					SORT_NO, 
+					GMT_CREATE, 
+					CREATE_BY, 
+					GMT_MODIFIED, 
+					LAST_MODIFIED_BY, 
+					DEL_FLAG, 
+					REMARK, 
+					TXT_1, 
+					TXT_2
+				)
+			VALUES
+				(
+					#{dictMainDO.dictMainCode}, 
+					UUID(), 
+					#{dictMainDO.lableKey}, 
+					#{dictMainDO.lableName}, 
+					'0', 
+					NOW(), 
+					#{userCode}, 
+					NOW(), 
+					#{userCode}, 
+					'0', 
+					#{dictMainDO.remark}, 
+					#{dictMainDO.txt1}, 
+					#{dictMainDO.txt2}
+				)
+	</insert>
+	<!-- 更新主字典数据 -->
+	<update id="updateDictMain">
+		UPDATE 
+				T_SYS_DICT_MAIN 
+			SET
+				LABLE_KEY 			=	#{dictMainDO.lableKey} , 
+				LABLE_NAME 			= 	#{dictMainDO.lableName} ,  
+				GMT_MODIFIED 		= 	NOW() , 
+				LAST_MODIFIED_BY 	= 	#{userCode}, 
+				REMARK 				= 	#{dictMainDO.remark}
+			WHERE
+					DICT_MAIN_CODE 	= #{dictMainDO.dictMainCode}
+				AND
+						DEL_FLAG 	=	'0'				
+	
+	</update>
+	<!-- 通过主字典编码数组 批量删除主字典 -->
+	<update id="delBatchDictMainByDictMainCodeAy">
+		UPDATE 
+				T_SYS_DICT_MAIN 
+			SET 
+				DEL_FLAG 		 = 	'1' ,
+				GMT_MODIFIED 	 = 	NOW(),
+				LAST_MODIFIED_BY =  #{userCode}
+				
+			WHERE
+							  1  =	1
+				AND
+					DICT_MAIN_CODE
+							IN 
+							 <foreach collection="dictMainCodeAy" index="index" item="item" open="(" separator="," close=")" >
+									${item}
+							</foreach>
+	</update>
+</mapper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.neusoft.srm.mapper.menu.MenuMapper">
+	<select id="getAllMenu" resultType="map">
+	   SELECT
+	      MENU_CODE,
+	      MENU_NAME,
+	      MENU_URL,
+	      PARENT_MENU_CODE,
+	      TYPE,
+	      LEVEL,
+	      AUTH_CODE,
+	      REMARK,
+	      LEFT_HIDE_FLAG,
+	      MENU_PIC_URL,
+	      DEL_FLAG,
+	      ID,
+	      SORT_NO
+	   FROM
+	      T_SYS_MENU
+	   WHERE
+	      DEL_FLAG = '0'
+	   ORDER BY SORT_NO  
+	</select>
+	<insert id="insertMenu" parameterType="com.neusoft.srm.model.menu.Menu">
+	   INSERT INTO 	T_SYS_MENU
+	      (MENU_CODE, 
+		  MENU_NAME, 
+		  MENU_URL, 
+		  PARENT_MENU_CODE, 
+		  TYPE, 
+		  LEVEL, 
+		  AUTH_CODE, 
+		  REMARK, 
+		  LEFT_HIDE_FLAG, 
+		  MENU_PIC_URL, 
+		  DEL_FLAG, 
+		  ID, 
+		  SORT_NO, 
+		  GMT_CREATE, 
+		  CREATE_BY, 
+		  GMT_MODIFIED, 
+		  LAST_MODIFIED_BY)
+       VALUES
+          (#{menu.menuCode},
+		   #{menu.menuName},
+		   #{menu.menuUrl},
+		   #{menu.parentMenuCode},
+		   #{menu.type},
+		   NULL,
+		   #{menu.authCode},
+		   #{menu.remark},
+		   '0',
+		   #{menu.menuPicUrl},
+		   '0',
+		   UUID(),
+		   #{menu.sortNo},
+		   NOW(),
+		   #{menu.createBy},
+		   NOW(),
+		   #{menu.lastModifiedBy}
+	)
+	</insert>
+	<!-- 修改菜单信息 -->
+	<update id="updateMenu" parameterType="com.neusoft.srm.model.menu.Menu">
+	    	UPDATE
+	    	   T_SYS_MENU
+	    	SET
+	    	   MENU_NAME = #{menu.menuName},
+	    	   TYPE = #{menu.type},
+	    	   MENU_URL = #{menu.menuUrl},
+	    	   MENU_PIC_URL = #{menu.menuPicUrl},
+	    	   LEFT_HIDE_FLAG = #{menu.leftHideFlag},
+	    	   REMARK = #{menu.remark},
+	    	   GMT_CREATE = NOW(),
+	    	   CREATE_BY = #{menu.createBy},
+	    	   GMT_MODIFIED = NOW(),
+	    	   LAST_MODIFIED_BY = #{menu.lastModifiedBy}
+	    	WHERE
+	    	   MENU_CODE = #{menu.menuCode}
+	</update>
+	
+	<!-- 逻辑删除菜单 -->
+	<update id="deleteMenu">
+	UPDATE
+	   T_SYS_MENU
+	SET
+	   DEL_FLAG = '1',
+	   GMT_MODIFIED = NOW(),
+	   LAST_MODIFIED_BY = #{operatorCode}
+	WHERE
+	   MENU_CODE = #{menuCode}
+	</update>
+	<!-- 查找 AUTH_CODE-->
+	<select id="findMaxAuthCodeByparentMenuCode" resultType="String">
+	SELECT 
+	   MAX(AUTH_CODE)
+	FROM
+	   T_SYS_MENU
+	WHERE 
+	   PARENT_MENU_CODE = #{parentMenuCode} AND DEL_FLAG = '0'
+	</select>
+	<!-- 查找菜单 SORT_NO -->
+	<select id="findMaxSortNoByparentMenuCode" parameterType="java.lang.String"
+	         resultType="java.lang.Integer">
+	SELECT 
+	   MAX(SORT_NO)
+	FROM
+	   T_SYS_MENU
+	WHERE 
+	   PARENT_MENU_CODE = #{parentMenuCode} AND DEL_FLAG = '0'
+	</select>
+	 <!-- 查找目录最大SORT_NO-->
+	 <select id="findMaxParentSortNo" parameterType="java.lang.Integer"
+	   resultType="java.lang.Integer">
+	   SELECT
+	      MAX(SORT_NO)
+	   FROM
+	      T_SYS_MENU
+	   WHERE
+	      TYPE = '2' AND DEL_FLAG = '0'
+	</select> 
+	</mapper>

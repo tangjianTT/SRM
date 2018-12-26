@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.menu.GetBtnByPostMapper" >
+        <!-- 根据岗位code,菜单code获取按钮信息-->
+  <select id="findMenuBtnByPost" resultType="com.neusoft.srm.model.menu.MenuButton">
+	SELECT
+	   B.BUTTON_CODE,
+	   MB.BUTTON_NAME,
+	   MB.BUTTON_STYLE,
+	   MB.BUTTON_URL,
+	   MB.MENU_CODE
+	FROM
+	   (SELECT 
+	       RB.ROLE_CODE,RB.BUTTON_CODE
+	    FROM 
+	       T_SYS_ROLE_MENU_BUTTON RB
+	LEFT JOIN
+	(SELECT
+	    PR.ROLE_CODE
+	FROM 
+	   T_SYS_POST_ROLE PR
+	WHERE PR.POST_CODE = #{postCode} AND PR.DEL_FLAG = 0) A
+	ON RB.ROLE_CODE = A.ROLE_CODE AND RB.DEL_FLAG = 0
+	WHERE 
+	   RB.MENU_CODE = #{menuCode} AND RB.DEL_FLAG = 0) B
+	LEFT JOIN 
+	   T_SYS_MENU_BUTTON MB
+	ON B.BUTTON_CODE = MB.BUTTON_CODE AND MB.DEL_FLAG = 0
+  </select>
+</mapper>

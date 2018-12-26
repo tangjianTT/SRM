@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.srm.mapper.log.AccessLogMapper">
+	<resultMap type="com.neusoft.srm.model.log.AccessLogDO"
+		id="accessLogRusult" autoMapping="true"></resultMap>
+	<!-- 按条件获取所有登录日志 -->
+	<select id="selectAccessLogByCond" resultMap="accessLogRusult">
+		SELECT 
+				ACCESS_CODE,
+				ID,
+				APPID,
+				METHOD,
+				APPLICATION_NAME,
+				CLIENT_IP,
+				CLIENT_PORT,
+				TARGET_IP,
+				INSTANCE_IP,
+				INSTANCE_PORT,
+				READ_TIME,
+				TIMEZONES,
+				PROCESS_TIME,
+				PROTOCOL,
+				HTTP_METHOD,
+				URL,
+				STATUS,
+				RECEIVE_SIZE,
+				SEND_SIZE,
+				REFERRER,
+				USER_AGENT,
+				FEATURE,
+				DEL_FLAG,
+				SORT_NO,
+				GMT_CREATE,
+				CREATE_BY,
+				GMT_MODIFIED,
+				LAST_MODIFIED_BY,
+				USER_NAME,
+				SESSIONID
+		FROM
+				T_SYS_ACCESS_LOG
+		WHERE 
+				1=1
+			AND
+				DEL_FLAG = '0'
+		<if test="userName != null and userName != '' ">
+			AND 
+				USER_NAME LIKE CONCAT(#{userName},'%')
+		</if>
+		<if test="gmtCreateFrom != null and gmtCreateFrom != '' ">
+			AND
+					GMT_CREATE
+			BETWEEN
+						#{gmtCreateFrom}
+					AND
+						#{gmtCreateEnd}
+		</if>
+		ORDER BY
+		 		GMT_MODIFIED ASC
+	</select>
+	<!-- 按条件统计记录日志数量 -->
+	<select id="countAccessLogByCond" resultType="java.lang.Integer">
+		SELECT
+				COUNT(1)
+		FROM
+			T_SYS_ACCESS_LOG
+		WHERE 
+				1=1
+		<if test="userName != null and userName != '' ">
+			AND
+				USER_NAME LIKE CONCAT(#{userName},'%')
+		</if>
+		<if test="gmtCreateFrom != null and gmtCreateFrom != '' ">
+			AND
+					GMT_CREATE
+			BETWEEN 	#{gmtCreateFrom}
+				 	AND
+						#{gmtCreateEnd}
+		</if>
+	</select>
+	<!-- 插入记录日志 -->
+	<insert id="insertAccessLog">
+		INSERT INTO 
+			T_SYS_ACCESS_LOG 
+				(
+					ACCESS_CODE, 
+					ID, 
+					APPID, 
+					METHOD, 
+					APPLICATION_NAME, 
+					CLIENT_IP, 
+					CLIENT_PORT, 
+					TARGET_IP, 
+					INSTANCE_IP, 
+					INSTANCE_PORT, 
+					READ_TIME, 
+					TIMEZONES, 
+					PROCESS_TIME, 
+					PROTOCOL, 
+					HTTP_METHOD, 
+					URL, 
+					STATUS, 
+					RECEIVE_SIZE, 
+					SEND_SIZE, 
+					REFERRER, 
+					USER_AGENT, 
+					FEATURE, 
+					DEL_FLAG, 
+					SORT_NO, 
+					GMT_CREATE, 
+					CREATE_BY, 
+					GMT_MODIFIED, 
+					LAST_MODIFIED_BY, 
+					USER_NAME, 
+					SESSIONID,
+					REQUEST_PARAM_JSON
+				)
+			VALUES
+				(
+					#{accessLogDO.accessCode}, 
+					UUID(), 
+					'rrs_srm',
+					'2', 
+					'rrs_srm', 
+					#{accessLogDO.clientIp}, 
+					#{accessLogDO.clientPort}, 
+					#{accessLogDO.targetIp}, 
+					#{accessLogDO.instanceIp}, 
+					#{accessLogDO.instancePort}, 
+					NOW(), 
+					#{accessLogDO.timezones}, 
+					#{accessLogDO.processTime}, 
+					#{accessLogDO.protocol}, 
+					#{accessLogDO.httpMethod}, 
+					#{accessLogDO.url}, 
+					#{accessLogDO.status}, 
+					#{accessLogDO.receiveSize}, 
+					#{accessLogDO.sendSize}, 
+					#{accessLogDO.referrer}, 
+					#{accessLogDO.userAgent}, 
+					#{accessLogDO.feature}, 
+					'0', 
+					'0', 
+					NOW(), 
+					#{accessLogDO.createBy}, 
+					NOW(), 
+					#{accessLogDO.lastModifiedBy}, 
+					#{accessLogDO.userName}, 
+					#{accessLogDO.sessionid},
+					#{accessLogDO.requestParamJson}
+				)
+	</insert>
+</mapper>
